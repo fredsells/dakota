@@ -1,0 +1,193 @@
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+
+        
+        var availableTags = [
+	"ActionScript",
+	"AppleScript",
+	"Asp",
+	"BASIC",
+	"C",
+	"C++",
+	"Clojure",
+	"COBOL",
+	"ColdFusion",
+	"Erlang",
+	"Fortran",
+	"Groovy",
+	"Haskell",
+	"Java",
+	"JavaScript",
+	"Lisp",
+	"Perl",
+	"PHP",
+	"Python",
+	"Ruby",
+	"Scala",
+	"Scheme"
+];
+$( "#autocomplete" ).autocomplete({
+	source: availableTags
+});
+
+
+
+$( "#button" ).button();
+$( "#button-icon" ).button({
+	icon: "ui-icon-gear",
+	showLabel: false
+});
+
+
+
+$( "#radioset" ).buttonset();
+
+
+
+$( "#controlgroup" ).controlgroup();
+
+
+
+$( "#tabs" ).tabs();
+
+
+
+$( "#dialog" ).dialog({
+	autoOpen: false,
+	width: 400,
+	buttons: [
+		{
+			text: "Ok",
+			click: function() {
+				$( this ).dialog( "close" );
+			}
+		},
+		{
+			text: "Cancel",
+			click: function() {
+				$( this ).dialog( "close" );
+			}
+		}
+	]
+});
+
+// Link to open the dialog
+$( "#dialog-link" ).click(function( event ) {
+	$( "#dialog" ).dialog( "open" );
+	event.preventDefault();
+});
+
+
+
+$( "#datepicker" ).datepicker({
+	inline: true
+});
+
+
+
+$( "#slider" ).slider({
+	range: true,
+	values: [ 17, 67 ]
+});
+
+
+
+$( "#progressbar" ).progressbar({
+	value: 20
+});
+
+
+
+$( "#spinner" ).spinner();
+$( "#menu" ).menu();
+$( "#tooltip" ).tooltip();
+$( "#selectmenu" ).selectmenu();
+
+
+// Hover states on the static widgets
+$( "#dialog-link, #icons li" ).hover(
+	function() {
+		$( this ).addClass( "ui-state-hover" );
+	},
+	function() {
+		$( this ).removeClass( "ui-state-hover" );
+	}
+);
+
+
+
+		
+		<!-- tablesorter plugin -->
+		<script src="../js/jquery.tablesorter.js"></script>
+		<!-- tablesorter widget file - loaded after the plugin -->
+		<script src="../js/jquery.tablesorter.widgets.js"></script>
+
+		
+				<script 
+			src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" 
+			integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" 
+			crossorigin="anonymous">
+		</script>
+		
+		
+		
+		  <ul class="my-tabs">
+    <li><a href="#tabs-1">Nunc tincidunt</a></li>
+    <li><a href="#tabs-2">Proin dolor</a></li>
+    <li><a href="#tabs-3">Aenean lacinia</a></li>
+  </ul>
+  <div id="tabs-1" class="my-tabgroup">
+    <p>xxxxxxxxxx</p>
+  </div>
+  <div id="tabs-2"  class="my-tabgroup">
+		<p>yyyyyyyyyyyyyyyy</p>
+  </div>
+  <div id="tabs-3"  class="my-tabgroup">
+    <p>zzzzzzzzzzzz</p>
+  </div>
+  
+  		<link rel="stylesheet" type="text/css" href="{% static 'practice/css/jquery-ui.css' %}">
+		<link rel="stylesheet" type="text/css" href="{% static 'practice/css/jquery-ui.structure.css' %}">
+		<link rel="stylesheet" type="text/css" href="{% static 'practice/css/jquery-ui.theme.css' %}">
+  
+  
+  		<link 	rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" 
+				integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" 
+				crossorigin="anonymous">
+
+		
+		<script 
+			src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" 
+			integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
+		</script>        
+  
+  
+  <link 	rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" >
+  # def xxxx(request, pk=0):
+#     template_name = 'practice/tablesorter.html'
+#     context_object_name = 'latest_question_list'
+#
+#     return render(request, template_name, {'question': 0,
+#                                                       'error_message': "You didn't select a choice.",
+#                                                     }
+#     )
+#
+#
+# # def vote(request, question_id):
+# #     question = get_object_or_404(Question, pk=question_id)
+# #     try:
+# #         selected_choice = question.choice_set.get(pk=request.POST['choice'])
+# #     except (KeyError, Choice.DoesNotExist):
+# #         # Redisplay the question voting form.
+# #         return render(request, 'practice/detail.html', {
+# #             'question': question,
+# #             'error_message': "You didn't select a choice.",
+# #         })
+# #     else:
+# #         selected_choice.votes += 1
+# #         selected_choice.save()
+# #         # Always return an HttpResponseRedirect after successfully dealing
+# #         # with POST data. This prevents data from being posted twice if a
+# #         # user hits the Back button.
+# #         return HttpResponseRedirect(reverse('practice:results', args=(question.id,)))
+
+

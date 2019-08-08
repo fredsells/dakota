@@ -1,0 +1,261 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>jQuery tablesorter 2.0 - Scroller Widget</title>
+
+	<!-- jQuery -->
+	<script src="practice/js/jquery.js"></script>
+
+	<!-- Demo stuff -->
+	<script src="js/jquery-ui.min.js"></script>
+<!--	
+	<link rel="stylesheet" href="css/jq.css">
+	<link href="css/prettify.css" rel="stylesheet">
+	<script src="js/prettify.js"></script>
+	<script src="js/docs.js"></script>
+
+	<!-- Tablesorter: theme -->
+	<link id="ui-theme" class="ui-theme" rel="stylesheet" href="css/jquery-ui.min.css">
+	<link class="ui-theme" rel="stylesheet" href="../css/theme.jui.css">
+	<link class="theme default" rel="stylesheet" href="../css/theme.default.css">
+	<link class="theme blue" rel="stylesheet" href="../css/theme.blue.css">
+	<link class="theme green" rel="stylesheet" href="../css/theme.green.css">
+	<link class="theme grey" rel="stylesheet" href="../css/theme.grey.css">
+	<link class="theme ice" rel="stylesheet" href="../css/theme.ice.css">
+	<link class="theme black-ice" rel="stylesheet" href="../css/theme.black-ice.css">
+	<link class="theme dark" rel="stylesheet" href="../css/theme.dark.css">
+	<link class="theme dropbox" rel="stylesheet" href="../css/theme.dropbox.css">
+	<link class="theme metro-dark" rel="stylesheet" href="../css/theme.metro-dark.css">
+-->
+	<!-- Tablesorter script: required -->
+	<script src="../js/jquery.tablesorter.js"></script>
+	<script src="../js/jquery.tablesorter.widgets.js"></script>
+	<script src="../js/widgets/widget-scroller.js"></script>
+
+	<style id="css">/* Fixed column scroll bar spacer styling */
+.tablesorter-scroller-bar-spacer {
+	background: #eee;
+}
+/* add border to right side (LTR pages) of fixed column */
+.tablesorter-scroller-fixed:after {
+	content: '';
+	border-right: 1px solid #444;
+	width: 1px;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	z-index: 2;
+	/* set to zero for non-jquery ui themes; use "left" here for RTL pages */
+	right: 0;
+	/* match the margins set to the table to keep the border the same height as the table */
+	margin: 10px 0 15px;
+}
+
+/* using-x-theme added by the demo code */
+.using-jui-theme .tablesorter-scroller-fixed:after {
+	/* use "left" here for RTL pages */
+	right: 0;
+}
+.using-green-theme .tablesorter-scroller-fixed:after,
+.using-black-ice-theme .tablesorter-scroller-fixed:after,
+.using-dark-theme .tablesorter-scroller-fixed:after,
+.using-dropbox-theme .tablesorter-scroller-fixed:after {
+	/* match the margins set to the table to keep the border the same height as the table */
+	margin: 0;
+}
+
+/* OPTIONAL CSS! */
+#fixed-columns-table tbody td {
+	/* force "Notes" column to not wrap, so we get a horizontal scrolling demo! */
+	white-space: nowrap;
+	/* Add min column width, or "Index" column filter gets too narrow to use */
+	min-width: 60px;
+}</style>
+
+	<!-- jQuery UI theme switcher: https://github.com/pontikis/jui_theme_switch/ -->
+	<style>
+	.switcher_container { padding: 5px; }
+	.switcher_list { padding: 2px; }
+	.switcher_label { margin-right: 5px; }
+	</style>
+	<script src="js/jquery.jui_theme_switch.min.js"></script>
+	<script>
+	$(function() {
+		$('#switcher').jui_theme_switch({
+			stylesheet_link_id : 'ui-theme',
+			switcher_label     : 'Select jQuery UI Theme:',
+			default_theme      : 'cupertino',
+			datasource_url     : 'assets/theme_switcher.json'
+		});
+	});
+	</script>
+	<script id="js">$(function() {
+
+	$('.tablesorter').tablesorter({
+		theme: 'jui',
+		showProcessing: true,
+		headerTemplate : '{content} {icon}',
+		widgets: [ 'uitheme', 'zebra', 'filter', 'scroller' ],
+		widgetOptions : {
+			scroller_height : 300,
+			// scroll tbody to top after sorting
+			scroller_upAfterSort: true,
+			// pop table header into view while scrolling up the page
+			scroller_jumpToHeader: true,
+			// In tablesorter v2.19.0 the scroll bar width is auto-detected
+			// add a value here to override the auto-detected setting
+			scroller_barWidth : null
+			// scroll_idPrefix was removed in v2.18.0
+			// scroller_idPrefix : 's_'
+		}
+	});
+
+	var startFixedColumns = 2;
+
+	$('#fixed-columns-table').tablesorter({
+		theme: 'jui',
+		showProcessing: true,
+		headerTemplate : '{content} {icon}',
+		widgets: [ 'uitheme', 'zebra', 'filter', 'scroller' ],
+		widgetOptions : {
+			// scroll tbody to top after sorting
+			scroller_upAfterSort: true,
+			// pop table header into view while scrolling up the page
+			scroller_jumpToHeader: true,
+
+			scroller_height : 300,
+			// set number of columns to fix
+			scroller_fixedColumns : startFixedColumns,
+			// add a fixed column overlay for styling
+			scroller_addFixedOverlay : false,
+			// add hover highlighting to the fixed column (disable if it causes slowing)
+			scroller_rowHighlight : 'hover',
+
+			// bar width is now calculated; set a value to override
+			scroller_barWidth : null
+		}
+	});
+
+	// use jQuery UI slider to change the fixed column size
+	$( '#slider' ).slider({
+		value : startFixedColumns,
+		min   : 0,
+		max   : 4,
+		step  : 1,
+		slide : function( event, ui ) {
+			// page indicator
+			$( '.fixed-columns' ).text( ui.value );
+			// method to update the fixed column size
+			$( '#fixed-columns-table').trigger( 'setFixedColumnSize', ui.value );
+		}
+	});
+
+	// update column value display
+	$( '.fixed-columns' ).text( startFixedColumns );
+
+});</script>
+<script>
+$(function() {
+
+	var $jth = $('#jth'), // scroller_jumpToHeader toggle button
+		$uas = $('#uas'), // scroller_upAfterSort toggle button
+		themes = 'default blue green grey ice black-ice dark dropbox metro-dark',
+		i, o = '', t = themes.split(' ');
+	for (i = 0; i < t.length; i++) {
+		o += '<option value="' + t[i] + '">' + t[i] + '</option>';
+	}
+
+	$('#theme')
+		.append(o)
+		.val('jui')
+		.change(function() {
+			var theme = $(this).val().toLowerCase();
+
+			// show jui select only if jQuery UI selected
+			$('#switcher').toggle(theme === 'jui');
+			// add class so the black border fits the theme
+			$('#main').attr( 'class', 'using-' + theme + '-theme' );
+
+			// refresh uitheme widget class names
+			$('#main .tablesorter').each(function() {
+				if (this.config) {
+					this.config.theme = theme === 'black-ice' ? 'blackice' : theme;
+				}
+			});
+			$('table').trigger('applyWidgets');
+
+			// make sure columns align
+			$(window).trigger('resize');
+		}).change();
+
+	$('button').click(function() {
+		var jth = $jth.text() === 'true',
+			uas = $uas.text() === 'true';
+		if (this.id === 'jthb') {
+			jth = !jth;
+		} else {
+			uas = !uas;
+		}
+		$('.tablesorter-scroller-table table').each(function() {
+			var c = this.config;
+			if (c) {
+				c.widgetOptions.scroller_jumpToHeader = jth;
+				c.widgetOptions.scroller_upAfterSort = uas;
+			}
+		});
+		$jth.html(jth + '');
+		$uas.html(uas + '');
+		return false;
+	});
+
+});
+</script>
+</head>
+<body>
+
+
+
+
+	<h4 id="narrow-demo">templates/practice/tablesorter</h4>
+	<div class="narrow-block">
+	<table class="tablesorter">
+		<thead>
+			<tr><th>Account #</th><th>First Name</th><th>Last Name</th><th>Age</th><th>Total</th><th>Discount</th><th>Diff</th></tr>
+		</thead>
+		<tfoot>
+			<tr><th>Account #</th><th>First Name</th><th>Last Name</th><th>Age</th><th>Total</th><th>Discount</th><th>Diff</th></tr>
+		</tfoot>
+		<tbody>
+			<tr><td>A43</td><td>Peter</td><td>Parker</td><td>28</td><td>9.99</td><td>20.3%</td><td>+3</td></tr>
+			<tr><td>A255</td><td>John</td><td>Hood</td><td>33</td><td>19.99</td><td>25.1%</td><td>-7</td></tr>
+			<tr><td>A33</td><td>Clark</td><td>Kent</td><td>18</td><td>15.49</td><td>44.2%</td><td>-13</td></tr>
+			<tr><td>A11</td><td>Bruce</td><td>Almighty</td><td>45</td><td>153.19</td><td>44%</td><td>+19</td></tr>
+			<tr><td>A102</td><td>Bruce</td><td>Evans</td><td>56</td><td>153.19</td><td>23%</td><td>+9</td></tr>
+			<tr><td>A23</td><td>Mike</td><td>Peters</td><td>22</td><td>5.69</td><td>20.3%</td><td>+2</td></tr>
+			<tr><td>A55</td><td>Leslie</td><td>Kent</td><td>33</td><td>15.99</td><td>25.1%</td><td>-3</td></tr>
+			<tr><td>A3</td><td>Frank</td><td>Mint</td><td>44</td><td>12.59</td><td>44.2%</td><td>-12</td></tr>
+			<tr><td>A21</td><td>Joe</td><td>Thomas</td><td>45</td><td>15.25</td><td>44%</td><td>+12</td></tr>
+			<tr><td>A12</td><td>Tess</td><td>Evans</td><td>66</td><td>13.59</td><td>23%</td><td>+4</td></tr>
+			<tr><td>A21</td><td>Peter</td><td>Dunn</td><td>12</td><td>2.99</td><td>21.1%</td><td>+2</td></tr>
+			<tr><td>A33</td><td>Harry</td><td>Jones</td><td>13</td><td>19.49</td><td>22.2%</td><td>-6</td></tr>
+			<tr><td>A13</td><td>John</td><td>James</td><td>16</td><td>13.89</td><td>42.1%</td><td>-13</td></tr>
+			<tr><td>A71</td><td>Nick</td><td>Parker</td><td>45</td><td>13.89</td><td>44%</td><td>+29</td></tr>
+			<tr><td>A21</td><td>Charles</td><td>Dunn</td><td>19</td><td>15.49</td><td>22%</td><td>+3</td></tr>
+			<tr><td>A42</td><td>Tera</td><td>Jones</td><td>83</td><td>14.19</td><td>13%</td><td>+5</td></tr>
+			<tr><td>A51</td><td>Paul</td><td>Daniels</td><td>76</td><td>5.99</td><td>20%</td><td>+1</td></tr>
+			<tr><td>A36</td><td>Harvey</td><td>Phillips</td><td>84</td><td>22.50</td><td>23%</td><td>+2</td></tr>
+			<tr><td>A5</td><td>James</td><td>Micheal</td><td>11</td><td>12.99</td><td>44.4%</td><td>-3</td></tr>
+			<tr><td>A1</td><td>Norma</td><td>Harry</td><td>43</td><td>12.39</td><td>41%</td><td>-9</td></tr>
+			<tr><td>A91</td><td>Charley</td><td>Duncan</td><td>22</td><td>14.44</td><td>12%</td><td>-1</td></tr>
+		</tbody>
+	</table>
+	</div>
+
+	<div class="halfspacer"></div>
+
+</div>
+
+</body>
+</html>

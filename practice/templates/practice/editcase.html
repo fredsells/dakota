@@ -1,0 +1,24 @@
+{% extends "practice/base.html" %}
+
+{% block content %}
+    <h1> Edit Case For {{client.lastname}}, {{client.firstname}}</h1>
+ {% load widget_tweaks %}
+  <h2>{{ note }}</h2>
+  <form action={% url 'practice:editcase' %} method="post" >
+    {% csrf_token %}
+
+    {% for field in caseform %}
+        <p>
+        {{field.errors }}
+        {{field.label_tag }}: {{ field}}
+        </p>
+    {% endfor %}
+<!--
+    {{ caseform.as_p }}
+-->
+	<a class="round_button" href={% url 'practice:rand' %}>Cancel</a>
+	<span style="width:200px"></span>
+    <input type="submit" value="Submit">
+  </form>
+
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "practice/base.html" %}
+
+{% block content %}
+    <h1> Enter New Case For{{person.lastname}}, {{person.firstname}}</h1>
+
+  <h2>{{ note }}</h2>
+  <form action={% url 'practice:newcase' %} method="post">
+    {% csrf_token %}
+
+
+    {{ form.as_p }}
+   
+	<a class="round_button" href={% url 'practice:rand' %}>Cancel</a>
+	<span style="width:200px"></span>
+    <input type="submit" value="Save Case Info">
+  </form>
+{% endblock %}

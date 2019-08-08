@@ -1,0 +1,17 @@
+{% extends 'practice/base.html' %}
+
+
+{% block content %}
+{% if latest_question_list %}
+    <ul>
+    {% for question in latest_question_list %}
+
+
+        <li><a href="{% url 'practice:detail' question.id %}">{{ question.question_text }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No practice are available.</p>
+{% endif %}
+
+{% endblock %}

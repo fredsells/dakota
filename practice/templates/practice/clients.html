@@ -1,0 +1,91 @@
+{% extends 'practice/base.html' %}
+
+
+{% block content %}
+<script >
+  $( function() {
+//	$("body").height($(window).height());
+    				$("#clients_table").on('click','td',function (e) {
+    					var id = $(this).closest('tr').attr('id');
+    					alert(id);
+    					});
+	
+//	alert("loaded " + $("#details").attr('id') );
+	$( "#details_panel" ).tabs();
+});
+
+</script>
+
+
+<div vertical layout>
+
+<section class="">
+  <div class="container">
+    <table id="invoices">
+      <thead>
+        <tr class="header" id="{{client.id}}">
+          <th>Name<div>Name</div></th>
+          <th> Address1 <div>Address1</div>  </th>
+          <th> Address1 <div>Address1</div>  </th>
+          <th> City, State Zip <div> City, State Zip </div>  </th>
+          <th> Email <div>Email</div>  </th>
+           <th> Unpaid <div>Unpaid</div>  </th>
+           <th> Total Due <div>Total Due</div>  </th>
+           <th> Next Invoice <div>Next Invoice</div>  </th>
+
+        </tr>
+      </thead>
+
+      <tbody id="clients_table">
+   		{% for client in invoices %}
+       <tr id={{client.id}}>
+           
+           <td>{{client.lastname}},&nbsp;{{client.firstname}}</td>
+			<td> {{client.addr1}}</td>
+			<td> {{client.addr2}}</td>
+			<td>{{client.city}},&nbsp;{{client.state}} ,&nbsp;{{client.zip}}</td>
+			<td> {{client.email}} </td>
+			<td> 0 </td>
+			<td> 1100 </td>
+			<td> <input type="text" value=""$55.00" onblur="set_payment( {{client.id}} )"> </td>
+			
+       </tr>
+   {% endfor %}       
+      </tbody>
+    </table>
+  </div>
+</section>
+
+</div>
+
+
+
+<div id = "details_panel">
+         <ul>
+            <li><a href = "#tabs-2">Edit Client</a></li>
+            <li><a href = "#tabs-3">Edit Cases</a></li>
+            <li><a href = "#tabs-4">Record Payment</a></li>
+         </ul>
+         <div id = "tabs-2">
+            <p>
+               Neque porro quisquam est qui dolorem ipsum quia dolor sit 
+               amet, consectetur, adipisci velit... 
+            </p>
+         </div>
+         <div id = "tabs-3">
+            <p>
+               Lorem ipsum dolor sit amet, consectetur adipisicing elit, 
+               sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+               Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris 
+               nisi ut aliquip ex ea commodo consequat.
+            </p>
+         </div>
+		         <div id = "tabs-4">
+            <p>
+               placeholder for payments
+            </p>
+         </div>
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,234 @@
+{% extends 'practice/base.html' %}
+
+
+{% block content %}
+<script >
+  var SelectedClientId;
+  var SelectedCaseId;
+
+    function logpayment() {
+        alert( "log payment for # " + SelectedClientId + "not yet implemented");
+    };
+
+    function addcase(clientid) {
+        var url = 'newcase?clientid='+SelectedClientId;
+        console.log(url)
+        location.href =url;
+    }
+
+  $( function() {
+      var ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+      function setFilter(event) {
+         alert("setFilter");
+      }
+
+	
+
+	$("#line_items tr").dblclick(function (e) {
+						//alert("got click");
+    					//var id = $(this).closest('tr').attr('id');
+						var id = $(this).attr('id');
+    					//alert("client " + id);
+    					var url = "editclient?id="+id;
+						location.href = url;
+    });
+		
+	
+	$( "#details_panel" ).tabs();
+	
+	$("#line_items tr").click(function (e) {  // when a row (client) is selected.
+						var clientid = $(this).attr('id');
+						SelectedClientId = clientid;
+                  $.ajax({
+                        type: 'GET',
+                        dataType: 'json',
+                        contentType: 'application/json; charset=utf-8',
+                        url: 'cases',
+                        data: {'id': clientid },
+                        success: function(data) {
+                                $("#newcase_button").text("Add Case For " + data['title'] );
+                                $("#payment_button").text("Log Payment For " + data['title'] );
+                                var text = "";
+                                $("#cases").empty();
+                                $.each(data['data'], function(index, element) {
+                                        text += "<tr id=" + element.id + " > "
+                                        +"<td>" + element.begindate + "</td>"
+                                        +"<td>" + element.casenum + "</td>"
+                                        +"<td>"+ element.description  + "</td>"
+                                        +"<td>"+ element.representationfee  + "</td>"
+                                        +"<td>"+ element.trialfee   + "</td>"
+                                        +"<td>"+ element.initialpayment   + "</td>"
+                                        +"</tr>";
+                                    });
+                                    $("#cases").append(text);
+                                    $("#cases tr").dblclick(function (e) {
+                                            alert("got double click");
+                                            var id = $(this).closest('tr').attr('id');
+                                            console.log(clientid, id)
+                                            location.href ="editcase?id=" + id ;
+                                    });
+ 
+                        }
+                   });
+
+
+                  
+         });
+            
+    					
+	
+
+	$("#line_items tr input").blur(function (e) {
+						//alert("got blur");
+    					var id = $(e.target).closest('tr').attr('id');
+						var value = $(this).val();
+    					//alert("edit "+id+"="+value);
+						//console.log("bluer "+id+"=" + value);
+    });
+		
+		var i;
+	for (i = 0; i < ALPHABET.length; i++) {
+  		var letter  = ALPHABET[i];
+		$( "<button id='" + letter + "' class='round_button'>"+letter+"</button>" ).insertBefore("#start-here");
+		//console.log(button);
+	} 
+
+	
+	$("#filter_bar button").click(function(e){
+	  	var id = $(this).attr('id');
+        $("#filter_bar button").css({"background-color": "blue", "color": "white"});
+        $("#filter_bar #"+id).css({"background-color": "yellow", "color": "black"});
+        $("#line_items tr").each(function(row){
+            console.log(  $(this).attr('id')  );
+            if (id=="all") {
+               $("#line_items tr").show();
+             } else { 
+               $("#line_items tr").hide();
+               $("#line_items tr[data-startswith='" + id +"']").show();
+             }
+        })
+
+	});
+	
+	}); /********************************************end of script *******************************/
+</script>
+
+
+<div vertical layout>
+    <h2> {{ notes }}</h2>
+
+<div id="filter_bar" >
+  <button class="round_button">spare</button>
+  <button class="round_button">spare</button>
+  <button class="round_button" id="all">all</button>
+  <span id="start-here"></span>
+</div>
+
+<section class="">
+  <div class="container">
+    <table id="clients_table">
+      <thead>
+        <tr class="header" >
+          <th>Name<div>Name</div></th>
+          <th> Address1 <div>Address1</div>  </th>
+          <th> Address2 <div>Address2</div>  </th>
+          <th> City, State Zip <div> City, State Zip </div>  </th>
+          <th> Email <div>Email</div>  </th>
+           <th> Unpaid <div>Unpaid</div>  </th>
+           <th> Total Due <div>Total Due</div>  </th>
+           <th> Next Invoice <div>Next Invoice</div>  </th>
+
+        </tr>
+      </thead>
+
+      <tbody id="line_items">
+        
+   		{% for client in items %}
+       <tr id="{{client.id}}"  data-startswith="{{ client.lastname | capfirst | slice:1 }}">
+           
+           <td >{{client.lastname}},&nbsp;{{client.firstname}}</td>
+			<td> {{client.addr1}}</td>
+			<td> {{client.addr2}}</td>
+			<td>{{client.city}},&nbsp;{{client.state}} ,&nbsp;{{client.zip}}</td>
+			<td> {{client.email}} </td>
+			<td> $22.22 </td>
+			<td> $33.33 </td>
+			<td> <input type="text" value="$55.00"></input> </td>
+			
+       </tr>
+   {% endfor %}       
+      </tbody>
+    </table>
+  </div>
+</section>
+
+</div>
+
+<div id = "details_panel">
+         <ul>
+            <li><a href = "#tabs-2">List Cases</a></li>
+            <li><a href = "#tabs-3">Payment History</a></li>
+            <li><a href = "#tabs-4">spare</a></li>
+         </ul>
+    <div id = "tabs-2" >
+        <button class="round_button" id="newcase_button" onclick="addcase()"></button>
+
+  <section class="">
+  <div class="container">
+       <table id="details_table">
+          <thead>
+            <tr class="header" >
+              <th>Date Begun<div>Date Begun</div></th>
+              <th>Case Number<div>Case Number</div></th>
+              <th> Description <div>Description</div>  </th>
+              <th> Representation Fee <div>Representation Fee</div>  </th>
+              <th> Trial Fee <div> Trial Fee </div>  </th>
+              <th> Initial Pmt <div> Initial Pmt </div>  </th>
+            </tr>
+          </thead>
+           <tbody id="cases">
+              <!-- filled out by AJAX -->
+           </tbody>
+       </table>
+  </div>
+  </section>
+
+         </div>
+         <div id = "tabs-3">
+              <button class="action" id="payment_button" onclick="logpayment()"></button>
+             <section class="">
+              <div class="container">
+                   <table id="details_table">
+                      <thead>
+                        <tr class="header" >
+                          <th>Date <div>Date</div></th>
+                          <th>Amount Invoiced<div>Amount Invoiced</div></th>
+                          <th> Amount Paid <div>Amount Paid</div>  </th>
+
+                        </tr>
+                      </thead>
+                       <tbody id="payments">
+                            <tr>
+                                <td> 8/1/2019</td>
+                                <td> $100.00</td>
+                                <td></td>
+                            </tr>
+                          <tr>
+                                <td> 8/11/2019</td>
+                                <td> </td>
+                                <td>$100.00</td>
+                            </tr>                          <!-- filled out by AJAX -->
+                       </tbody>
+                   </table>
+              </div>
+              </section>
+         </div>
+		         <div id = "tabs-4">
+            <p>
+               placeholder for something else
+            </p>
+         </div>
+</div>
+
+{% endblock %}
