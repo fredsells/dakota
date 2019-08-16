@@ -20,6 +20,9 @@ class NewTransactionForm(forms.ModelForm):
     class Meta:
         model = Transaction
         fields = '__all__'
+        widgets = {
+            'dateposted': forms.DateInput(attrs={'class': 'datepicker'})
+        }
 
 
 

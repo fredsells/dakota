@@ -66,12 +66,12 @@ def newtransaction(request):
             # person = Person.objects.get(pk=clientid)
             dateposted = form.cleaned_data['dateposted']
             description = form.cleaned_data['description']
-            transtype = form.cleaned_data['type']
+            transtype = form.cleaned_data['transtype']
             amount = form.cleaned_data['amount']
             transaction = Transaction(person=person,
                                       dateposted=dateposted,
                                       amount = amount,
-                                      type = transtype,
+                                      transtype = transtype,
                                       description=description)
             print(person, dateposted, description, transtype, amount)
             transaction.save()

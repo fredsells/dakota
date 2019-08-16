@@ -30,6 +30,7 @@ urlpatterns = [
     path('editcase', edit_views.case.editcase, name='editcase'),
     path('newcase', edit_views.case.newcase, name='newcase'),
 
+    path('transactions', views.get_transactions, name='transactions'),
     path('edittransaction', edit_views.edittransaction, name='edittransaction'),
     path('newtransaction', edit_views.newtransaction, name='newtransaction'),
 

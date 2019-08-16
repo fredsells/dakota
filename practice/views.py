@@ -17,7 +17,7 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import permission_required
 
 
-from .models import Person, Case
+from .models import Person, Case, Transaction, TransactionType
 
 
 def home(request):
@@ -30,11 +30,19 @@ def get_cases(request):
     title = person.lastname + ', ' + person.firstname
     cases = Case.objects.filter(person=person).order_by('-begindate')
     data = list(cases.values() )
-    ################################################################# for d in data: print(d)
     x = JsonResponse({'data': data, 'title':title, 'clientid':client_id})
     return x
     
-
+def get_transactions(request):
+    client_id = request.GET.get('id', None)
+    person = Person.objects.get(pk=client_id)
+    title = person.lastname + ', ' + person.firstname
+    items = Transaction.objects.filter(person=person).select_related().order_by('-dateposted')
+    values = items.values('person','transtype__name', 'id', 'dateposted', 'description', 'amount', 'transtype__id')
+#    values = items.values()
+    data = list(values)
+    x = JsonResponse({'data': data, 'title':title, 'clientid':client_id})
+    return x
 
 
 

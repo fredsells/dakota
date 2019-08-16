@@ -15,7 +15,7 @@
     }
 
 
-    function addtransaction() {
+    function addtransaction(clientid) {
         var url = 'newtransaction?clientid='+SelectedClientId;
         console.log(url)
         location.href =url;
@@ -38,74 +38,70 @@
 		
 	$( ".datepicker" ).datepicker();
 	$( "#details_panel" ).tabs();
-	
+
+	function populate_transactions(data, textStatus, xhr) { 
+        $("#newtransaction_button").text("Add Transaction For " + data['title'] ).attr("disabled", false);
+        var text = "";
+        $("#transactions").empty();
+        $.each(data['data'], function(index, element) {
+            text += "<tr id=" + element.id + " > "
+            +"<td>" + element.dateposted + "</td>"
+            +"<td>" + element.description + "</td>"
+            +"<td>"+ element.transtype__name  + "</td>"
+            +"<td>"+ element.amount  + "</td>"
+            +"<td>"+ "</td>"
+            +"<td>"+  "</td>"
+            +"<td>"+  "</td>"
+            +"</tr>";
+        	});   //------------------end each loop
+        $("#transactions").append(text);
+        $("#transactions tr").dblclick(function (e) {location.href ="editcase?id=" + $(this).closest('tr').attr('id'); });
+
+		}//--------------end of function
+
+
+
+	function populate_cases(data, textStatus, xhr) { 
+        $("#newcase_button").text("Add Case For " + data['title'] ).attr("disabled", false);
+        $("#newtransaction_button").text("Add Transaction For " + data['title'] ).attr("disabled", false);
+        var text = "";
+        $("#cases").empty();
+        $.each(data['data'], function(index, element) {
+            text += "<tr id=" + element.id + " > "
+            +"<td>" + element.begindate + "</td>"
+            +"<td>" + element.casenum + "</td>"
+            +"<td>"+ element.description  + "</td>"
+            +"<td>"+ element.representationfee  + "</td>"
+            +"<td>"+ element.trialfee   + "</td>"
+            +"<td>"+ element.initialpayment   + "</td>"
+            +"</tr>";
+        	});   //------------------end each loop
+        $("#cases").append(text);
+        $("#cases tr").dblclick(function (e) {location.href ="editcase?id=" + $(this).closest('tr').attr('id'); });
+
+		};
+
 	$("#people tr").click(function (e) {  // when a row (client) is selected.
-						var clientid = $(this).attr('id');
-						SelectedClientId = clientid;
+				  SelectedClientId = $(this).attr('id');
                   $.ajax({
                         type: 'GET',
                         dataType: 'json',
                         contentType: 'application/json; charset=utf-8',
                         url: 'cases',
-                        data: {'id': clientid },
-                        success: function(data) {
-                                $("#newcase_button").text("Add Case For " + data['title'] );
-                                $("#newtransaction_button").text("Add Transaction For " + data['title'] );
-                                var text = "";
-                                $("#cases").empty();
-                                $.each(data['data'], function(index, element) {
-                                        text += "<tr id=" + element.id + " > "
-                                        +"<td>" + element.begindate + "</td>"
-                                        +"<td>" + element.casenum + "</td>"
-                                        +"<td>"+ element.description  + "</td>"
-                                        +"<td>"+ element.representationfee  + "</td>"
-                                        +"<td>"+ element.trialfee   + "</td>"
-                                        +"<td>"+ element.initialpayment   + "</td>"
-                                        +"</tr>";
-                                    });
-                                    $("#cases").append(text);
-                                    $("#cases tr").dblclick(function (e) {
-                                            alert("got double click");
-                                            var id = $(this).closest('tr').attr('id');
-                                            console.log(clientid, id)
-                                            location.href ="editcase?id=" + id ;
-                                    });
- 
-                        }
-                   });
-                    console.log("second ajax call");
-                    $.ajax({
+                        data: {'id': SelectedClientId },
+                        success: populate_cases
+                   }); //-------------------end ajax
+					console.log("starting ajax 2");
+                  $.ajax({
                         type: 'GET',
                         dataType: 'json',
                         contentType: 'application/json; charset=utf-8',
                         url: 'transactions',
-                        data: {'clientid': SelectedClientId },
-                        success: function(data) {
-                                $("#newtransaction_button").text("Add Transaction For " + data['title'] );
-                                var text = "";
-                                $("#transactions").empty();
-                                $.each(data['data'], function(index, element) {
-                                        text += "<tr id=" + element.id + " > "
-                                        +"<td>" + element.dateposted + "</td>"
-                                        +"<td>" + element.description + "</td>"
-                                        +"<td>"+ element.description  + "</td>"
-                                        +"<td>"+ element.amount  + "</td>"
-                                        +"<td>"+ element.amount   + "</td>"
-                                        +"<td>"+ element.amount   + "</td>"
-                                        +"</tr>";
-                                    });
-                                    $("#transactions").append(text);
-                                    $("#transactions tr").dblclick(function (e) {
-                                            alert("got transaction double click");
-                                            var id = $(this).closest('tr').attr('id');
-                                            console.log(clientid, id)
-                                            location.href ="edittransaction?id=" + id ;
-                                    });
-
-                        }
-                   });
-                  
-         });
+                        data: {'id': SelectedClientId },
+                        success: populate_transactions
+                   }); //-------------------end ajax
+  
+         });  // ----------------end selector
             
     					
 	
@@ -202,7 +198,7 @@
             <li><a href = "#tabs-4">spare</a></li>
          </ul>
     <div id = "tabs-2" >
-        <button class="round_button" id="newcase_button" onclick="addcase()"></button>
+        <button disabled class="round_button" id="newcase_button" onclick="addcase()">Please Select a Client</button>
 
   <section class="">
   <div class="container">
@@ -226,7 +222,7 @@
 
          </div>
          <div id = "tabs-3">
-              <button class="action" id="addtransaction_button" onclick="addtransaction()">New Transaction</button>
+              <button type="button" disabled class="round_button" id="newtransaction_button" onclick="addtransaction()">Please Select a Client</button>
              <section class="">
               <div class="container">
                    <table id="transactions_table">

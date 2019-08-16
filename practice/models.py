@@ -8,16 +8,15 @@ from unittest.util import _MAX_LENGTH
 
 class TransactionType(models.Model):
     id = models.AutoField(primary_key=True, db_column='transactiontypeid')
-    type = models.CharField(max_length=20)
-
+    name = models.CharField(max_length=20)
     multiplier = models.IntegerField(default=0)  # +1= charge, 0=no impact, -1=payment
     #used with transaction amount to determine balance impact.
 
     def __unicode__(self):
-        return 'transaction type={}, id={}, multiplier={}'.format(self.type, self.id, self.multiplier)
+        return 'transaction type={}, id={}, multiplier={}'.format(self.name, self.id, self.multiplier)
 
     def __str__(self):
-        return '{}, multiplier={}'.format(self.type, self.multiplier)
+        return '{}, multiplier={}'.format(self.name, self.multiplier)
 
     class Meta:
         db_table = 'transactiontypes'
@@ -98,13 +97,16 @@ class Transaction(models.Model):
     id = models.AutoField(primary_key=True, db_column='transactionid')
     person = models.ForeignKey(Person, db_column='personid', null=True, on_delete=models.SET_NULL)
     dateposted = models.DateField(default=datetime.date.today)
-    type = models.ForeignKey(TransactionType, null=True, on_delete=models.SET_NULL)
-    description = models.TextField(max_length=60, null=True, default='', blank=True)
+    transtype = models.ForeignKey(TransactionType, null=True, on_delete=models.SET_NULL)
+    description = models.CharField(max_length=60, null=True, default='', blank=True)
     amount = models.DecimalField(max_digits=8, decimal_places=2, null=True )
 
 
     def __unicode__(self):
-        return 'date posted={}, description={}, balance'.format( self.person.lastname, self.dateposted, self.description, self.balance)
+
+        return 'date posted={}, description={}, balance'.format( self.person.lastname, self.dateposted, self.description)
+    def __str__(self):
+        return 'date posted={}, description={}, balance{}'.format( self.person.lastname, self.dateposted, self.description)
 
     class Meta:
         db_table = 'transactions'
