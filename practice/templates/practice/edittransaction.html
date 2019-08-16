@@ -1,13 +1,13 @@
 {% extends "practice/base.html" %}
 
 {% block content %}
-    <h1> Edit Case For {{client.lastname}}, {{client.firstname}}</h1>
+    <h1> {{ title }}</h1>
 
   <h2>{{ note }}</h2>
-  <form action={% url 'practice:editcase' %} method="post" >
+  <form action={% url 'practice:edittransaction' %} method="post" >
     {% csrf_token %}
 
-    {% for field in caseform %}
+    {% for field in form %}
         <p>
         {{field.errors }}
         {{field.label_tag }}: {{ field}}
@@ -18,7 +18,7 @@
 -->
 	<a class="round_button" href={% url 'practice:rand' %}>Cancel</a>
 	<span style="width:200px"></span>
-    <input type="submit" value="Submit">
+    <input  class="round_button" type="submit" value="Submit">
   </form>
 
 {% endblock %}

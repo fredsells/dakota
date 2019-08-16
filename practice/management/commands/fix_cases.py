@@ -19,7 +19,7 @@ class Command(BaseCommand):
         cases = Case.objects.all()
         for case in cases:
             d = random.randint(3, 400)
-            case.begindate = datetime.date.today() - datetime.timedelta(days=d)
+            case.begindate = case.begindate or (datetime.date.today() - datetime.timedelta(days=d))
             case.save()
 
 

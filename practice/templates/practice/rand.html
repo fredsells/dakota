@@ -6,12 +6,17 @@
   var SelectedClientId;
   var SelectedCaseId;
 
-    function logpayment() {
-        alert( "log payment for # " + SelectedClientId + "not yet implemented");
-    };
+
 
     function addcase(clientid) {
         var url = 'newcase?clientid='+SelectedClientId;
+        console.log(url)
+        location.href =url;
+    }
+
+
+    function addtransaction() {
+        var url = 'newtransaction?clientid='+SelectedClientId;
         console.log(url)
         location.href =url;
     }
@@ -20,24 +25,21 @@
       var ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
       function setFilter(event) {
-         alert("setFilter");
+         alert("setFilter does nothing");
       }
 
 	
 
-	$("#line_items tr").dblclick(function (e) {
-						//alert("got click");
-    					//var id = $(this).closest('tr').attr('id');
-						var id = $(this).attr('id');
-    					//alert("client " + id);
-    					var url = "editclient?id="+id;
+	$("#people tr").dblclick(function (e) {
+						SelectedClientId = $(this).attr('id');
+    					var url = "editclient?id="+SelectedClientId;
 						location.href = url;
     });
 		
-	
+	$( ".datepicker" ).datepicker();
 	$( "#details_panel" ).tabs();
 	
-	$("#line_items tr").click(function (e) {  // when a row (client) is selected.
+	$("#people tr").click(function (e) {  // when a row (client) is selected.
 						var clientid = $(this).attr('id');
 						SelectedClientId = clientid;
                   $.ajax({
@@ -48,7 +50,7 @@
                         data: {'id': clientid },
                         success: function(data) {
                                 $("#newcase_button").text("Add Case For " + data['title'] );
-                                $("#payment_button").text("Log Payment For " + data['title'] );
+                                $("#newtransaction_button").text("Add Transaction For " + data['title'] );
                                 var text = "";
                                 $("#cases").empty();
                                 $.each(data['data'], function(index, element) {
@@ -71,15 +73,44 @@
  
                         }
                    });
+                    console.log("second ajax call");
+                    $.ajax({
+                        type: 'GET',
+                        dataType: 'json',
+                        contentType: 'application/json; charset=utf-8',
+                        url: 'transactions',
+                        data: {'clientid': SelectedClientId },
+                        success: function(data) {
+                                $("#newtransaction_button").text("Add Transaction For " + data['title'] );
+                                var text = "";
+                                $("#transactions").empty();
+                                $.each(data['data'], function(index, element) {
+                                        text += "<tr id=" + element.id + " > "
+                                        +"<td>" + element.dateposted + "</td>"
+                                        +"<td>" + element.description + "</td>"
+                                        +"<td>"+ element.description  + "</td>"
+                                        +"<td>"+ element.amount  + "</td>"
+                                        +"<td>"+ element.amount   + "</td>"
+                                        +"<td>"+ element.amount   + "</td>"
+                                        +"</tr>";
+                                    });
+                                    $("#transactions").append(text);
+                                    $("#transactions tr").dblclick(function (e) {
+                                            alert("got transaction double click");
+                                            var id = $(this).closest('tr').attr('id');
+                                            console.log(clientid, id)
+                                            location.href ="edittransaction?id=" + id ;
+                                    });
 
-
+                        }
+                   });
                   
          });
             
     					
 	
 
-	$("#line_items tr input").blur(function (e) {
+	$("#people tr input").blur(function (e) {
 						//alert("got blur");
     					var id = $(e.target).closest('tr').attr('id');
 						var value = $(this).val();
@@ -87,12 +118,11 @@
 						//console.log("bluer "+id+"=" + value);
     });
 		
-		var i;
+	var i;
 	for (i = 0; i < ALPHABET.length; i++) {
   		var letter  = ALPHABET[i];
 		$( "<button id='" + letter + "' class='round_button'>"+letter+"</button>" ).insertBefore("#start-here");
-		//console.log(button);
-	} 
+	}
 
 	
 	$("#filter_bar button").click(function(e){
@@ -142,7 +172,7 @@
         </tr>
       </thead>
 
-      <tbody id="line_items">
+      <tbody id="people">
         
    		{% for client in items %}
        <tr id="{{client.id}}"  data-startswith="{{ client.lastname | capfirst | slice:1 }}">
@@ -196,33 +226,39 @@
 
          </div>
          <div id = "tabs-3">
-              <button class="action" id="payment_button" onclick="logpayment()"></button>
+              <button class="action" id="addtransaction_button" onclick="addtransaction()">New Transaction</button>
              <section class="">
               <div class="container">
-                   <table id="details_table">
+                   <table id="transactions_table">
                       <thead>
                         <tr class="header" >
                           <th>Date <div>Date</div></th>
-                          <th>Amount Invoiced<div>Amount Invoiced</div></th>
-                          <th> Amount Paid <div>Amount Paid</div>  </th>
+                          <th>Description<div>Description</div></th>
+                          <th>Type<div>Type</div>  </th>
+                          <th>Invoice<div>Invoice</div></th>
+                          <th>Charges<div>Charges</div>  </th>
+                          <th>Payments<div>Payments</div>  </th>
+                          <th>Balance<div>Balance</div>  </th>
 
                         </tr>
                       </thead>
-                       <tbody id="payments">
+                       <tbody id="transactions">
                             <tr>
                                 <td> 8/1/2019</td>
-                                <td> $100.00</td>
-                                <td></td>
+                                <td> Rep Fee Case #12345... DUI</td>
+                                <td> Fee </td>
+                                <td> </td> <!-- invoice -->
+                                <td> $1000.00</td>  <!-- charges -->
+                                <td></td>  <!--payments-->
+                                <td>$1000.00</td> <!-- balance -->
                             </tr>
-                          <tr>
-                                <td> 8/11/2019</td>
-                                <td> </td>
-                                <td>$100.00</td>
-                            </tr>                          <!-- filled out by AJAX -->
+                          <!-- filled out by AJAX -->
                        </tbody>
                    </table>
               </div>
               </section>
+
+
          </div>
 		         <div id = "tabs-4">
             <p>

@@ -6,6 +6,50 @@ from django.utils import timezone
 from django.db import models
 from unittest.util import _MAX_LENGTH
 
+class TransactionType(models.Model):
+    id = models.AutoField(primary_key=True, db_column='transactiontypeid')
+    type = models.CharField(max_length=20)
+
+    multiplier = models.IntegerField(default=0)  # +1= charge, 0=no impact, -1=payment
+    #used with transaction amount to determine balance impact.
+
+    def __unicode__(self):
+        return 'transaction type={}, id={}, multiplier={}'.format(self.type, self.id, self.multiplier)
+
+    def __str__(self):
+        return '{}, multiplier={}'.format(self.type, self.multiplier)
+
+    class Meta:
+        db_table = 'transactiontypes'
+        managed = True
+
+class PaymentType(models.Model):
+    id = models.IntegerField(primary_key=True, db_column='paymenttypeid')
+    type = models.CharField(max_length=10)
+
+    def __unicode__(self):
+        return 'type={}, id={}'.format((self.type, self.id))
+
+    class Meta:
+        db_table = 'paymenttypes'
+        managed = True
+
+
+class Salutation(models.Model):
+    id = models.AutoField(primary_key=True, db_column='salutationid')
+    salutation = models.CharField(max_length=10)
+
+    def __unicode__(self):
+        return 'salutation={}, id={}'.format((self.salutation, self.id))
+
+    def __str__(self):
+        return 'salutation: ' + self.salutation
+
+    class Meta:
+        db_table = 'salutations'
+        managed = True
+
+
 # Create your models here.
 class Person(models.Model):
     id = models.IntegerField(primary_key=True, db_column='personid')
@@ -21,7 +65,10 @@ class Person(models.Model):
     email = models.EmailField(max_length=50, null=True, blank=True, default='')
 
     def __unicode__(self):
-        return 'name={}, id={}'.format((self.lastname, self.personid))
+        return 'name={}, id={}'.format((self.lastname, self.id))
+
+    def __str__(self):
+        return '{},{}  id={}'.format(self.lastname, self.firstname, self.id)
 
     class Meta:
         db_table = 'persons'
@@ -47,4 +94,18 @@ class Case(models.Model):
         managed = True
 
 
+class Transaction(models.Model):
+    id = models.AutoField(primary_key=True, db_column='transactionid')
+    person = models.ForeignKey(Person, db_column='personid', null=True, on_delete=models.SET_NULL)
+    dateposted = models.DateField(default=datetime.date.today)
+    type = models.ForeignKey(TransactionType, null=True, on_delete=models.SET_NULL)
+    description = models.TextField(max_length=60, null=True, default='', blank=True)
+    amount = models.DecimalField(max_digits=8, decimal_places=2, null=True )
 
+
+    def __unicode__(self):
+        return 'date posted={}, description={}, balance'.format( self.person.lastname, self.dateposted, self.description, self.balance)
+
+    class Meta:
+        db_table = 'transactions'
+        managed = True
