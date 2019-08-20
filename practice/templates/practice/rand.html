@@ -3,12 +3,112 @@
 
 {% block content %}
 <script >
+  var ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   var SelectedClientId;
   var SelectedCaseId;
 
-    function logpayment() {
-        alert( "log payment for # " + SelectedClientId + "not yet implemented");
-    };
+
+
+  	function populate_transactions(data, textStatus, xhr) {
+        $("#newtransaction_button").text("Add Transaction For " + data['title'] ).attr("disabled", false);
+        var text = "";
+        $("#transactions").empty();
+        $.each(data['data'], function(index, element) {
+            text += "<tr id=" + element.id + " > "
+            +"<td>" + element.dateposted + "</td>"
+            +"<td>" + element.description + "</td>"
+            +"<td>"+ element.transtype__name  + "</td>"
+            +"<td>"+ element.amount  + "</td>"
+            +"<td>"+ "</td>"
+            +"<td>"+  "</td>"
+            +"<td>"+  "</td>"
+            +"</tr>";
+        	});   //------------------end each loop
+        $("#transactions").append(text);
+        $("#transactions tr").dblclick(function (e) {location.href ="edittransaction?id=" + $(this).closest('tr').attr('id'); });
+
+		}//--------------end of function
+
+
+
+	function populate_cases(data, textStatus, xhr) {
+        $("#newcase_button").text("Add Case For " + data['title'] ).attr("disabled", false);
+        $("#newtransaction_button").text("Add Transaction For " + data['title'] ).attr("disabled", false);
+        var text = "";
+        $("#cases").empty();
+        //alert('cases ' + data['data'] );
+        $.each(data['data'], function(index, element) {
+            text += "<tr id=" + element.id + " > "
+            +"<td>" + element.begindate + "</td>"
+            +"<td>" + element.casenum + "</td>"
+            +"<td>"+ element.description  + "</td>"
+            +"<td>"+ element.representationfee  + "</td>"
+            +"<td>"+ element.trialfee   + "</td>"
+            +"<td>"+ element.initialpayment   + "</td>"
+            +"</tr>";
+        	});   //------------------end each loop
+        $("#cases").append(text);
+        $("#cases tr").dblclick(function (e) {location.href ="editcase?id=" + $(this).closest('tr').attr('id'); });
+
+	} //------------end function
+
+
+  	function get_client_details(id) {  // when a row (client) is selected.
+          SelectedClientId = id;
+          $.ajax({
+                type: 'GET',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                url: 'cases',
+                data: {'id': SelectedClientId },
+                success: populate_cases
+           }); //-------------------end ajax
+          $.ajax({
+                type: 'GET',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                url: 'transactions',
+                data: {'id': SelectedClientId },
+                success: populate_transactions
+           }); //-------------------end ajax
+
+     }  // ----------------end function
+
+
+
+
+  function populate_clients(data, textStatus, xhr) {
+        var text = "";
+        $("#people").empty();
+        $.each(data['data'], function(index, client) {
+        //console.log(client.id);
+        var row = "<tr id=" + client.id + "  data-startswith='" + client.lastname.toUpperCase().charAt(0) + "'>"
+            + "<td>"  + client.lastname + ",&nbsp;"  + client.firstname + "</td>"
+			+ "<td>"  + client.addr1 + "</td>"
+			+ "<td>"  + client.addr2 + "</td>"
+			+ "<td>"  + client.city + ",&nbsp;" + client.state + " ,&nbsp;" + client.zip+ "</td>"
+			+ "<td>"  + client.email + " </td>"
+			+ "<td> $22.22 </td>"
+			+ "<td> $33.33 </td>"
+			+ "<td> 0 </td>"
+            + "</tr>";
+        //console.log(row);
+        text += row;
+        });   //------------------end each loop
+        $("#people").append(text);
+
+        $("#people tr").dblclick(function (e) {
+						SelectedClientId = $(this).attr('id');
+						//console.log('xxx'+this);
+    					var url = "editclient?id="+SelectedClientId;
+						location.href = url;
+        });
+        $("#people tr").click(function (e) {
+            SelectedClientId = $(this).attr('id');
+            get_client_details(SelectedClientId);
+         });
+
+    } //-----------------end function
 
     function addcase(clientid) {
         var url = 'newcase?clientid='+SelectedClientId;
@@ -16,70 +116,35 @@
         location.href =url;
     }
 
+
+    function addtransaction(clientid) {
+        var url = 'newtransaction?clientid='+SelectedClientId;
+        console.log(url)
+        location.href =url;
+    }
+
+
+
   $( function() {
-      var ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-      function setFilter(event) {
-         alert("setFilter");
-      }
+      $.ajax({
+        type: 'GET',
+        dataType: 'json',
+        contentType: 'application/json; charset=utf-8',
+        url: 'getclients',
+        data: { },
+        success: populate_clients
+   }); //-------------------end ajax
 
-	
 
-	$("#line_items tr").dblclick(function (e) {
-						//alert("got click");
-    					//var id = $(this).closest('tr').attr('id');
-						var id = $(this).attr('id');
-    					//alert("client " + id);
-    					var url = "editclient?id="+id;
-						location.href = url;
-    });
 		
-	
+	$( ".datepicker" ).datepicker();
 	$( "#details_panel" ).tabs();
-	
-	$("#line_items tr").click(function (e) {  // when a row (client) is selected.
-						var clientid = $(this).attr('id');
-						SelectedClientId = clientid;
-                  $.ajax({
-                        type: 'GET',
-                        dataType: 'json',
-                        contentType: 'application/json; charset=utf-8',
-                        url: 'cases',
-                        data: {'id': clientid },
-                        success: function(data) {
-                                $("#newcase_button").text("Add Case For " + data['title'] );
-                                $("#payment_button").text("Log Payment For " + data['title'] );
-                                var text = "";
-                                $("#cases").empty();
-                                $.each(data['data'], function(index, element) {
-                                        text += "<tr id=" + element.id + " > "
-                                        +"<td>" + element.begindate + "</td>"
-                                        +"<td>" + element.casenum + "</td>"
-                                        +"<td>"+ element.description  + "</td>"
-                                        +"<td>"+ element.representationfee  + "</td>"
-                                        +"<td>"+ element.trialfee   + "</td>"
-                                        +"<td>"+ element.initialpayment   + "</td>"
-                                        +"</tr>";
-                                    });
-                                    $("#cases").append(text);
-                                    $("#cases tr").dblclick(function (e) {
-                                            alert("got double click");
-                                            var id = $(this).closest('tr').attr('id');
-                                            console.log(clientid, id)
-                                            location.href ="editcase?id=" + id ;
-                                    });
- 
-                        }
-                   });
 
 
-                  
-         });
-            
-    					
 	
 
-	$("#line_items tr input").blur(function (e) {
+	$("#people tr input").blur(function (e) {
 						//alert("got blur");
     					var id = $(e.target).closest('tr').attr('id');
 						var value = $(this).val();
@@ -87,25 +152,24 @@
 						//console.log("bluer "+id+"=" + value);
     });
 		
-		var i;
+	var i;
 	for (i = 0; i < ALPHABET.length; i++) {
   		var letter  = ALPHABET[i];
 		$( "<button id='" + letter + "' class='round_button'>"+letter+"</button>" ).insertBefore("#start-here");
-		//console.log(button);
-	} 
+	}
 
 	
 	$("#filter_bar button").click(function(e){
 	  	var id = $(this).attr('id');
         $("#filter_bar button").css({"background-color": "blue", "color": "white"});
         $("#filter_bar #"+id).css({"background-color": "yellow", "color": "black"});
-        $("#line_items tr").each(function(row){
+        $("#people tr").each(function(row){
             console.log(  $(this).attr('id')  );
             if (id=="all") {
-               $("#line_items tr").show();
+               $("#people tr").show();
              } else { 
-               $("#line_items tr").hide();
-               $("#line_items tr[data-startswith='" + id +"']").show();
+               $("#people tr").hide();
+               $("#people tr[data-startswith='" + id +"']").show();
              }
         })
 
@@ -142,23 +206,7 @@
         </tr>
       </thead>
 
-      <tbody id="line_items">
-        
-   		{% for client in items %}
-       <tr id="{{client.id}}"  data-startswith="{{ client.lastname | capfirst | slice:1 }}">
-           
-           <td >{{client.lastname}},&nbsp;{{client.firstname}}</td>
-			<td> {{client.addr1}}</td>
-			<td> {{client.addr2}}</td>
-			<td>{{client.city}},&nbsp;{{client.state}} ,&nbsp;{{client.zip}}</td>
-			<td> {{client.email}} </td>
-			<td> $22.22 </td>
-			<td> $33.33 </td>
-			<td> <input type="text" value="$55.00"></input> </td>
-			
-       </tr>
-   {% endfor %}       
-      </tbody>
+      <tbody id="people">      </tbody>
     </table>
   </div>
 </section>
@@ -172,7 +220,7 @@
             <li><a href = "#tabs-4">spare</a></li>
          </ul>
     <div id = "tabs-2" >
-        <button class="round_button" id="newcase_button" onclick="addcase()"></button>
+        <button disabled class="round_button" id="newcase_button" onclick="addcase()">Please Select a Client</button>
 
   <section class="">
   <div class="container">
@@ -196,33 +244,39 @@
 
          </div>
          <div id = "tabs-3">
-              <button class="action" id="payment_button" onclick="logpayment()"></button>
+              <button type="button" disabled class="round_button" id="newtransaction_button" onclick="addtransaction()">Please Select a Client</button>
              <section class="">
               <div class="container">
-                   <table id="details_table">
+                   <table id="transactions_table">
                       <thead>
                         <tr class="header" >
                           <th>Date <div>Date</div></th>
-                          <th>Amount Invoiced<div>Amount Invoiced</div></th>
-                          <th> Amount Paid <div>Amount Paid</div>  </th>
+                          <th>Description<div>Description</div></th>
+                          <th>Type<div>Type</div>  </th>
+                          <th>Invoice<div>Invoice</div></th>
+                          <th>Charges<div>Charges</div>  </th>
+                          <th>Payments<div>Payments</div>  </th>
+                          <th>Balance<div>Balance</div>  </th>
 
                         </tr>
                       </thead>
-                       <tbody id="payments">
+                       <tbody id="transactions">
                             <tr>
                                 <td> 8/1/2019</td>
-                                <td> $100.00</td>
-                                <td></td>
+                                <td> Rep Fee Case #12345... DUI</td>
+                                <td> Fee </td>
+                                <td> </td> <!-- invoice -->
+                                <td> $1000.00</td>  <!-- charges -->
+                                <td></td>  <!--payments-->
+                                <td>$1000.00</td> <!-- balance -->
                             </tr>
-                          <tr>
-                                <td> 8/11/2019</td>
-                                <td> </td>
-                                <td>$100.00</td>
-                            </tr>                          <!-- filled out by AJAX -->
+                          <!-- filled out by AJAX -->
                        </tbody>
                    </table>
               </div>
               </section>
+
+
          </div>
 		         <div id = "tabs-4">
             <p>
