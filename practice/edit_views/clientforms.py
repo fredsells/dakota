@@ -10,21 +10,23 @@ class NewPersonForm(forms.ModelForm):
     #size = forms.ModelChoiceField(queryset=Case.objects, empty_label=None, widget=forms.CheckBoxSelectMultiple)
     class Meta:
         model = Person
-        fields = ['lastname', 'firstname', 'addr1'] #, 'addr2', 'city', 'state', 'zip', 'email']
+        fields = ['lastname', 'firstname', 'addr1', 'addr2', 'city', 'state', 'zip', 'email']
         exclude = ('id',)
         labels = dict(lastname='Last Name',
                                  firstname='First Name',
                                  addr1='Address Line 1'
                                  )
 
+
+
+
 class PersonForm(forms.ModelForm):
-    #size = forms.ModelChoiceField(queryset=Case.objects, empty_label=None, widget=forms.CheckBoxSelectMultiple)
     class Meta:
         model = Person
-        fields = '__all__'#  '['lastname', 'firstname']#, 'addr1', 'addr2', 'city', 'state', 'zip', 'email']
+        fields = ['id','lastname', 'firstname', 'addr1', 'addr2', 'city', 'state', 'zip', 'email']
         labels = dict(lastname='Last Name',
                                  firstname='First Name',
-                                 #addr1='Address Line 1'
+                                 addr1='Address Line 1'
                                  )
         widgets = dict(id=forms.HiddenInput)
 

@@ -45,39 +45,48 @@ def edittransaction(request):
 
 def newtransaction(request):
     note = 'new transaction note'
-    print(note)
     if request.method == 'GET':
         clientid = request.GET['clientid']  # required; throw exception if missing
-        print('==============newtrans  ', clientid)
         person = Person.objects.get(pk=int(clientid))  # might have to change to int?
-        print('xxxxxxxxxxxxxxxxxxxxxxx', clientid, person)
-        initial_parms= dict(auto_id=False, person=person)
         t = Transaction()
         t.person=person
-        form = NewTransactionForm( instance=t)
+        form = NewTransactionForm(instance=t)
         return render(request, 'practice/newtransaction.html', {'form': form, 'person': person } )
     elif request.method == 'POST':
-        print('----------post values-----------',request.POST)
         form = NewTransactionForm(request.POST  )###########, instance=case)
         if form.is_valid():
-            print ( 'cleaned data', form.cleaned_data.items() )
             person = form.cleaned_data['person']
-            # clientid = form.cleaned_data['clientid']
-            # person = Person.objects.get(pk=clientid)
             dateposted = form.cleaned_data['dateposted']
             description = form.cleaned_data['description']
             transtype = form.cleaned_data['transtype']
             amount = form.cleaned_data['amount']
             transaction = Transaction(person=person,
                                       dateposted=dateposted,
-                                      amount = amount,
-                                      transtype = transtype,
+                                      amount=amount,
+                                      transtype=transtype,
                                       description=description)
-            print(person, dateposted, description, transtype, amount)
             transaction.save()
             note = "edit transaction saved"
-            return redirect('practice:rand'  )  # , {'note':note})#, {'person':person})
+            return redirect('practice:rand')  # , {'note':note})#, {'person':person})
         else:
             note = "form not valid " + str(form.errors)
-            print (form.errors)
             return render(request, 'practice/newtransaction.html', {'form': form, 'note': note})
+
+
+def edittransaction(request):
+    note = 'edit transaction note'
+    if request.method == 'POST':
+        id = request.POST['id']  # required; throw exception if missing
+        transaction = Transaction.objects.get(pk=id)
+        form = NewTransactionForm(request.POST, instance=transaction)
+        if form.is_valid():
+            form.save()
+            return redirect('practice:rand')
+        else:
+            note = 'some error'
+            return render(request, 'practice/edittransaction.html', {'form': form, 'person': transaction.person, 'note':note } )
+    else:  #must be a get
+        id = request.GET['id']  # required; throw exception if missing
+        transaction = Transaction.objects.get(pk=id)
+        form = NewTransactionForm(instance=transaction)
+        return render(request, 'practice/edittransaction.html', {'form': form, 'person': transaction.person, 'note': note})

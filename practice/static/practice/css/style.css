@@ -43,50 +43,31 @@ body {
     flex-direction: row;
   }
 
- /*
-input.filter[type=radio] + label {
-	background: yellow;
-	color: black;
+
+/*********************************************************
+the following css is to use a table for form layout.
+********************************************************/
+.form-table {
+    background: white;
+    border-collapse: collapse;
+    width: auto;
 }
 
-input.filter[type=radio]:checked +label{
-	background: yellow;
-	color: black;
+.form-table tr{
+    border: 1px solid white;
 }
-*/
+
+.form-table td, .form-table {
+    width: auto;
+    white-space: nowrap;
+    background: white;
+    border: 0px ;
+}
+
+
 #details_panel {
   min-height: 400px;
   background: lightgray;
   font-size: 14px;
 }
 
-/*
-#master {
-	width: 100%;
-	height: 400px;
-}
-
-#detail {
-	width: 100%
-	height: 400px;;
-}
-
-.my-tabs .ui-tabs-nav li { font-size: 10pt; }
-.my-tabgroup {
-	height: 100%
-}
-
-.tableFixHead          { overflow-y: auto; height: 100px; }
-.tableFixHead thead th { position: sticky; top: 0; }
-tr:nth-child(odd) {background: #FFF}
-
-
-.fill-height-or-more {
-  display: flex;
-  flex-direction: column;
-}
-.fill-height-or-more > div {
-  these are the flex items 
-  flex: 1;
-}
-*/

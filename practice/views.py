@@ -44,6 +44,13 @@ def get_transactions(request):
     x = JsonResponse({'data': data, 'title':title, 'clientid':client_id})
     return x
 
+def get_clients(request):
+    items = Person.objects.all().order_by('lastname', 'firstname')
+    values = items.values()
+    data = list(values)
+    x = JsonResponse({'data': data, 'title':'', 'clientid':''})
+    return x
+
 
 
 

@@ -4,22 +4,30 @@ from django.core.exceptions import ValidationError
 
 from practice.models import Person, Case
 
-class NewCaseForm(forms.Form):
-    personid = forms.IntegerField()
-    casenum = forms.CharField(max_length=14 )
-    description = forms.CharField(max_length=60)
-    representationfee = forms.DecimalField(max_digits=8)
-    trialfee = forms.DecimalField(max_digits=8)
-    initialpayment = forms.DecimalField(max_digits=8)
-    begindate = forms.DateField()
+class NewCaseForm(forms.ModelForm):
 
+    class Meta:
+        model = Case
+        readonly_fields = ('person',)
+        fields = ['person',  'casenum', 'representationfee', 'trialfee', 'description', 'initialpayment',
+                  'begindate']
+        labels = dict(casenum = 'Case #',
+                                 id = 'Internal Id',
+                                 representationfee = 'Rep Fee',
+                                 trialfee = 'Trial Fee',
+                                 description = 'Description',
+                                 initialpayment='Initial Pmt')
 
+        widgets = dict(person=forms.HiddenInput,
+                       begindate=forms.DateInput(attrs={'class': 'datepicker'})
+
+                       )
 
 class CaseForm(forms.ModelForm):
 
     class Meta:
         model = Case
-        fields = ['person', 'id', 'casenum', 'representationfee', 'trialfee', 'description', 'initialpayment',
+        fields = ['id', 'casenum', 'representationfee', 'trialfee', 'description', 'initialpayment',
                   'begindate', 'enddate']
         labels = dict(casenum = 'Case #',
                                  id = 'Internal Id',
@@ -28,5 +36,9 @@ class CaseForm(forms.ModelForm):
                                  description = 'Description',
                                  initialpayment='Initial Pmt')
 
-        widgets = dict(person= forms.HiddenInput, id= forms.HiddenInput)
+        widgets = dict(person_id=forms.HiddenInput,
+                       id=forms.HiddenInput,
+                       begindate=forms.DateInput(attrs={'class': 'datepicker'}),
+                       enddate=forms.DateInput(attrs={'class': 'datepicker'})
+                       )
 

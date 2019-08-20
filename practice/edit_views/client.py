@@ -19,36 +19,25 @@ from django.contrib.auth.decorators import permission_required
 from practice.models import Person, Case
 
 from .clientforms import NewPersonForm, PersonForm
-
+ID = 'id'
 def editclient(request):
     print ('\n\n\n =============================================editclient {} '.format(request.method) )
     note = ''
-
+    id = request.GET.get('id', None) or request.POST.get('id')
+    person = Person.objects.get(pk=id)
+    title = str(person)
     if request.method == 'GET':
-        pk = request.GET.get('id', None)
-        if pk:
-            xid = int(pk)
-            print('>>>>>>>>>>>>>>>>>>>>>>>>>', xid, type(Person.objects))
-            person = get_object_or_404(Person, pk=xid)
-            print('person===========', person)
-            form = PersonForm(instance=person)
-        else:
-            form = PersonForm()
-        return render(request, 'practice/editclient.html', {'personform' :form, 'note' :note})
+        form = PersonForm(instance=person)
+        return render(request, 'practice/editclient.html', {'form' :form, 'note' :note, 'title':title})
 
     elif request.method == 'POST':
         print( '==========================\npost parms', request.POST.items())
-        id = request.POST.get('id', None)
-        if not id:
-            person = Person()
-        else:
-            person = Person.objects.get(pk=id)
         filled_form = PersonForm(request.POST, instance=person)
         if filled_form.is_valid():
             filled_form.save()
             return render(request, 'practice/rand.html')
         else:
-            return render(request, 'practice/editcase.html', {'form' :filled_form, 'note' :person.lastname})
+            return render(request, 'practice/editclient.html', {'form':filled_form, 'note' :note, 'title':title})
 
 
 

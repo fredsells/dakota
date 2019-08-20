@@ -19,10 +19,15 @@ class NewTransactionForm(forms.ModelForm):
 
     class Meta:
         model = Transaction
-        fields = '__all__'
-        widgets = {
-            'dateposted': forms.DateInput(attrs={'class': 'datepicker'})
-        }
+        fields = ['person', 'dateposted', 'transtype', 'description', 'amount']
+
+
+        #widgets = dict(person=forms.HiddenInput, id=forms.HiddenInput)
+        widgets = dict(dateposted=forms.DateInput(attrs={'class': 'datepicker'}),
+                       person=forms.HiddenInput,
+                       id=forms.HiddenInput
+                       )
+
 
 
 
@@ -38,6 +43,9 @@ class NewTransactionForm(forms.ModelForm):
 class TransactionForm(forms.ModelForm):
     class Meta:
         model = Transaction
-        fields = '__all__'
+        fields = ['person', 'id',  'dateposted', 'transtype', 'description', 'amount']
+        widgets = {
+            'dateposted': forms.DateInput(attrs={'class': 'datepicker'})
+        }
 
 

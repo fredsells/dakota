@@ -77,13 +77,13 @@ class Person(models.Model):
 class Case(models.Model):
     id = models.IntegerField(primary_key=True, db_column='caseid')
     person = models.ForeignKey(Person, db_column='personid', null=True, on_delete=models.SET_NULL)
-    casenum = models.CharField(max_length=14, null=True, default='')
-    description = models.TextField(max_length=60, null=True, default='', blank=True)
+    casenum = models.CharField(max_length=14, null=True, default='', blank=True)
+    description = models.CharField(max_length=80, null=True, default='', blank=True)
     representationfee = models.DecimalField(max_digits=8, decimal_places=2, null=True )
     trialfee = models.DecimalField(max_digits=8, decimal_places=2, null=True )
     initialpayment = models.DecimalField(max_digits=8, decimal_places=2, null=True)
-    begindate = models.DateField(null=True)
-    enddate = models.DateField(null=True)
+    begindate = models.DateField(null=True, default='', blank=True)
+    enddate = models.DateField(null=True, default='', blank=True)
 
     def __unicode__(self):
         return 'case id={}, client={}'.format( self.id, self.person.lastname)
@@ -94,7 +94,7 @@ class Case(models.Model):
 
 
 class Transaction(models.Model):
-    id = models.AutoField(primary_key=True, db_column='transactionid')
+    id = models.IntegerField(primary_key=True, db_column='transactionid')
     person = models.ForeignKey(Person, db_column='personid', null=True, on_delete=models.SET_NULL)
     dateposted = models.DateField(default=datetime.date.today)
     transtype = models.ForeignKey(TransactionType, null=True, on_delete=models.SET_NULL)

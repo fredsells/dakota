@@ -9,7 +9,7 @@ from django.core.exceptions import ValidationError
 
 from .models import Person, Case
 
-def make_dictionary(**kwargs): return kwargs
+
 
 
 

@@ -18,28 +18,29 @@ from practice.models import Person, Case
 
 from .caseforms import NewCaseForm, CaseForm
 
-
+ID = 'id'
 def editcase(request):
     note = ''
+    id = request.GET.get(ID, False) or request.POST.get(ID) #one or the other
+    case = Case.objects.get(pk=id)
+    title = str(case.person)
     if request.method == 'GET':
-        caseid = request.GET['id']
-        case = Case.objects.get(pk=caseid)
         form = CaseForm(instance=case)
-        return render(request, 'practice/editcase.html', {'caseform': form ,'client' :case.person } )
-
-    elif request.method == 'POST':
-        print('----------post keys', request.POST.keys())
-        caseid = request.POST['id']
-        case = Case.objects.get(pk=caseid)
+        return render(request, 'practice/editcase.html', dict(form=form,
+                                                              title=title)
+                      )
+    else:  ##############must be request.method == 'POST':
         filled_form = CaseForm(request.POST, instance=case)
         if filled_form.is_valid():
             filled_form.save()
-            note = "edit case saved"
-            return redirect('practice:rand'  )  # , {'note':note})#, {'person':person})
+            return redirect('practice:rand')  # , {'note':note})#, {'person':person})
         else:
             note = "form not valid " + str(filled_form.errors)
             print (filled_form.errors)
-            return render(request, 'practice/editclient.html', {'form': filled_form, 'note': note})
+            return render(request, 'practice/editcase.html', dict(form=filled_form,
+                                                                  note=note,
+                                                                    title=title)
+                          )
 
 
 
@@ -48,13 +49,14 @@ def newcase(request):
     if request.method == 'GET':
         clientid = request.GET['clientid']  # required; throw exception if missing
         person = Person.objects.get(pk=clientid)  # might have to change to int?
-        form = NewCaseForm(initial={'personid': person.id}, auto_id=False)
-        return render(request, 'practice/newcase.html', {'form' :form, 'person' :person } )
+        initial_values = dict(person=person, auto_id=False)
+        form = NewCaseForm(instance=person)
+        return render(request, 'practice/newcase.html', {'form' :form, 'title' :str(person) } )
     elif request.method == 'POST':
         form = NewCaseForm(request.POST  )###########, instance=case)
         if form.is_valid():
-            personid = form.cleaned_data['personid']
-            person = Person.objects.get(pk=personid)
+            person = form.cleaned_data['person']
+            #person = Person.objects.get(pk=personid)
             casenum  = form.cleaned_data['casenum']
             description = form.cleaned_data['description']
             representationfee = form.cleaned_data['representationfee']
@@ -62,11 +64,11 @@ def newcase(request):
             initialpayment = form.cleaned_data['initialpayment']
             begindate = form.cleaned_data['begindate']
             case = Case(person=person, casenum=casenum, description=description, representationfee=representationfee,
-                        trialfee=trialfee, initialpayment=initialpayment, begindate=begindate)
+                         trialfee=trialfee, initialpayment=initialpayment, begindate=begindate, enddate=begindate)
             case.save()
             note = "edit case saved"
             return redirect('practice:rand'  )  # , {'note':note})#, {'person':person})
         else:
             note = "form not valid " + str(form.errors)
             print (form.errors)
-            return render(request, 'practice/newclient.html', {'form': form, 'note': note})
+            return render(request, 'practice/newcase.html', {'form': form, 'note': note, 'title' :str(person)})

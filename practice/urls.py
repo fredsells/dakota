@@ -24,6 +24,7 @@ urlpatterns = [
     path('rand', views.RandD.as_view(), name='rand'),
     path('cases', views.get_cases, name='cases'),
 
+    path('getclients', views.get_clients, name='getclients'),
     path('editclient', edit_views.client.editclient, name='editclient'),
     path('newclient', edit_views.client.newclient, name='newclient'),
 
