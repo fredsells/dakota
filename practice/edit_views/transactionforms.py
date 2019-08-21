@@ -24,28 +24,23 @@ class NewTransactionForm(forms.ModelForm):
 
         #widgets = dict(person=forms.HiddenInput, id=forms.HiddenInput)
         widgets = dict(dateposted=forms.DateInput(attrs={'class': 'datepicker'}),
-                       person=forms.HiddenInput,
-                       id=forms.HiddenInput
+                       #person=forms.HiddenInput,
+                       #id=forms.HiddenInput
                        )
 
-
-
-
-
-    # personid = forms.IntegerField()
-    # dateposted = forms.DateField()
-    # description = forms.CharField( max_length=60)
-    # #type = forms.ChoiceField(choices=TransactionType.objects.all())
-    # amount = forms.DecimalField(max_digits=8)
 
 
 
 class TransactionForm(forms.ModelForm):
     class Meta:
         model = Transaction
-        fields = ['person', 'id',  'dateposted', 'transtype', 'description', 'amount']
+        fields = ['id',  'dateposted', 'transtype', 'description', 'amount']
+        labels = dict(casenum='Transaction Type',
+                      id='Internal Id',
+                      )
         widgets = {
-            'dateposted': forms.DateInput(attrs={'class': 'datepicker'})
+            'dateposted': forms.DateInput(attrs={'class': 'datepicker'}),
+            'id': forms.HiddenInput,
         }
 
 

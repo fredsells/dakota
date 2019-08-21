@@ -18,30 +18,7 @@ from practice.models import Person, Case, Transaction, TransactionType
 
 from .transactionforms import NewTransactionForm, TransactionForm
 
-
-def edittransaction(request):
-    note = ''
-    if request.method == 'GET':
-        id = request.GET['id']
-        x = Transaction.objects.get(pk=id)
-        form = TransactionForm(instance=x)
-        return render(request, 'practice/edittransaction.html', {'form': form ,'client' :x.person } )
-
-    elif request.method == 'POST':
-        print('----------post keys', request.POST.keys())
-        id = request.POST['id']
-        x = Transaction.objects.get(pk=id)
-        filled_form = TransactionForm(request.POST, instance=x)
-        if filled_form.is_valid():
-            filled_form.save()
-            note = "edit case saved"
-            return redirect('practice:rand'  )  # , {'note':note})#, {'person':x.person})
-        else:
-            note = "form not valid " + str(filled_form.errors)
-            print (filled_form.errors)
-            return render(request, 'practice/edittransaction.html', {'form': filled_form, 'note': note})
-
-
+ID='id'
 
 def newtransaction(request):
     note = 'new transaction note'
@@ -75,18 +52,19 @@ def newtransaction(request):
 
 def edittransaction(request):
     note = 'edit transaction note'
-    if request.method == 'POST':
-        id = request.POST['id']  # required; throw exception if missing
-        transaction = Transaction.objects.get(pk=id)
-        form = NewTransactionForm(request.POST, instance=transaction)
+    id = request.GET.get(ID, False) or request.POST.get(ID, 0)  # one or the other
+    if not id:
+        raise Exception("no id in request.method")
+    transaction = Transaction.objects.get(pk=id)
+    person = transaction.person
+    if request.method == 'GET':
+        form = TransactionForm(instance=transaction)
+        return render(request, 'practice/edittransaction.html', dict(form=form, person=str(person))                      )
+    else:  ########### request.method == 'POST':
+        form =TransactionForm(request.POST, instance=transaction)
         if form.is_valid():
             form.save()
             return redirect('practice:rand')
         else:
             note = 'some error'
-            return render(request, 'practice/edittransaction.html', {'form': form, 'person': transaction.person, 'note':note } )
-    else:  #must be a get
-        id = request.GET['id']  # required; throw exception if missing
-        transaction = Transaction.objects.get(pk=id)
-        form = NewTransactionForm(instance=transaction)
-        return render(request, 'practice/edittransaction.html', {'form': form, 'person': transaction.person, 'note': note})
+            return render(request, 'practice/edittransaction.html', {'form': form, 'person': person, 'note':note } )

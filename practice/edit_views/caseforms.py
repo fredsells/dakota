@@ -16,9 +16,10 @@ class NewCaseForm(forms.ModelForm):
                                  representationfee = 'Rep Fee',
                                  trialfee = 'Trial Fee',
                                  description = 'Description',
-                                 initialpayment='Initial Pmt')
+                                 initialpayment='Initial Pmt',
+                                 begindate= 'Begin Date')
 
-        widgets = dict(person=forms.HiddenInput,
+        widgets = dict(#person=forms.HiddenInput,
                        begindate=forms.DateInput(attrs={'class': 'datepicker'})
 
                        )
