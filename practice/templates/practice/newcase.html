@@ -2,7 +2,7 @@
 
 {% block content %}
 
-    <h1> Enter New Case For{{title}}</h1>
+    <h1> Enter New Case For {{person}}</h1>
 
   <h2>{{ note }}</h2>
   <form action={% url 'practice:newcase' %} method="post">

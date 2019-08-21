@@ -83,7 +83,7 @@ class Case(models.Model):
     trialfee = models.DecimalField(max_digits=8, decimal_places=2, null=True )
     initialpayment = models.DecimalField(max_digits=8, decimal_places=2, null=True)
     begindate = models.DateField(null=True, default='', blank=True)
-    enddate = models.DateField(null=True, default='', blank=True)
+    enddate = models.DateField(null=True, default=None)
 
     def __unicode__(self):
         return 'case id={}, client={}'.format( self.id, self.person.lastname)

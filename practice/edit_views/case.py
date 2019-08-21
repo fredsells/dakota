@@ -50,25 +50,29 @@ def newcase(request):
         clientid = request.GET['clientid']  # required; throw exception if missing
         person = Person.objects.get(pk=clientid)  # might have to change to int?
         initial_values = dict(person=person, auto_id=False)
-        form = NewCaseForm(instance=person)
-        return render(request, 'practice/newcase.html', {'form' :form, 'title' :str(person) } )
+        form = NewCaseForm(initial=initial_values)
+        return render(request, 'practice/newcase.html', {'form':form, 'person' :str(person) } )
     elif request.method == 'POST':
         form = NewCaseForm(request.POST  )###########, instance=case)
+        print ('===============post', request.POST )
         if form.is_valid():
-            person = form.cleaned_data['person']
-            #person = Person.objects.get(pk=personid)
-            casenum  = form.cleaned_data['casenum']
-            description = form.cleaned_data['description']
-            representationfee = form.cleaned_data['representationfee']
-            trialfee = form.cleaned_data['trialfee']
-            initialpayment = form.cleaned_data['initialpayment']
-            begindate = form.cleaned_data['begindate']
-            case = Case(person=person, casenum=casenum, description=description, representationfee=representationfee,
-                         trialfee=trialfee, initialpayment=initialpayment, begindate=begindate, enddate=begindate)
-            case.save()
-            note = "edit case saved"
+            print('xxxxxxxxxxxxxxxxxxxxxxx', form.cleaned_data['begindate'])
+            form.save()
+            # person = form.cleaned_data['person']
+            # #person = Person.objects.get(pk=personid)
+            # casenum  = form.cleaned_data['casenum']
+            # description = form.cleaned_data['description']
+            # representationfee = form.cleaned_data['representationfee']
+            # trialfee = form.cleaned_data['trialfee']
+            # initialpayment = form.cleaned_data['initialpayment']
+            # begindate = form.cleaned_data['begindate']
+            # case = Case(person=person, casenum=casenum, description=description, representationfee=representationfee,
+            #              trialfee=trialfee, initialpayment=initialpayment, begindate=begindate)
+            # case.save()
+            # note = "edit case saved"
             return redirect('practice:rand'  )  # , {'note':note})#, {'person':person})
         else:
+            person = request.POST.get('person')
             note = "form not valid " + str(form.errors)
             print (form.errors)
             return render(request, 'practice/newcase.html', {'form': form, 'note': note, 'title' :str(person)})
