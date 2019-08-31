@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 
 import datetime, random
+import datetime, os, io
 
 
 from django.http import HttpResponseRedirect, HttpResponse
@@ -13,10 +14,29 @@ from django.http import JsonResponse
 #from rest_framework import viewsets
 from django.contrib.auth.decorators import permission_required
 
+from practice.docgen.generic_merge_manager import create_document
+from practice.docgen.engagement_letter_parser import Parser
 
 from practice.models import Person, Case
 
 from .caseforms import NewCaseForm, CaseForm
+
+def create_http_response( fullpath):
+    filename = os.path.split(fullpath)[1]
+    MSWORD_CONTENT_TYPE = 'application/vnd.ms-word'#.openxmlformats-officedocument.wordprocessingml.document'
+    f = open(fullpath, 'rb')
+    response = HttpResponse(f, content_type=MSWORD_CONTENT_TYPE)
+    response['Content-Disposition'] = 'attachment; filename=%s' % filename
+
+    return response
+
+
+def print_transaction(case):
+    stmt = Parser(case)
+    path = create_document('engagement', case.person.lastname, None, rows=[], **stmt.get_fields())
+    print(path)
+    response = create_http_response(path)
+    return response
 
 ID = 'id'
 def editcase(request):
@@ -32,8 +52,11 @@ def editcase(request):
     else:  ##############must be request.method == 'POST':
         filled_form = CaseForm(request.POST, instance=case)
         if filled_form.is_valid():
-            filled_form.save()
-            return redirect('practice:rand')  # , {'note':note})#, {'person':person})
+            case = filled_form.save()
+            if request.POST.get('print', True):
+                return print_transaction(case)
+            else:
+                return redirect('practice:rand')  # , {'note':note})#, {'person':person})
         else:
             note = "form not valid " + str(filled_form.errors)
             print (filled_form.errors)
@@ -57,20 +80,11 @@ def newcase(request):
         print ('===============post', request.POST )
         if form.is_valid():
             print('xxxxxxxxxxxxxxxxxxxxxxx', form.cleaned_data['begindate'])
-            form.save()
-            # person = form.cleaned_data['person']
-            # #person = Person.objects.get(pk=personid)
-            # casenum  = form.cleaned_data['casenum']
-            # description = form.cleaned_data['description']
-            # representationfee = form.cleaned_data['representationfee']
-            # trialfee = form.cleaned_data['trialfee']
-            # initialpayment = form.cleaned_data['initialpayment']
-            # begindate = form.cleaned_data['begindate']
-            # case = Case(person=person, casenum=casenum, description=description, representationfee=representationfee,
-            #              trialfee=trialfee, initialpayment=initialpayment, begindate=begindate)
-            # case.save()
-            # note = "edit case saved"
-            return redirect('practice:rand'  )  # , {'note':note})#, {'person':person})
+            case = form.save()
+            if request.POST.get('print', True):
+                return print_transaction(case)
+            else:
+                return redirect('practice:rand'  )  # , {'note':note})#, {'person':person})
         else:
             person = request.POST.get('person')
             note = "form not valid " + str(form.errors)

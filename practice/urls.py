@@ -25,6 +25,8 @@ urlpatterns = [
     path('cases', views.get_cases, name='cases'),
 
     path('getclients', views.get_clients, name='getclients'),
+    #path('print', views.print, name='print'),
+
     path('editclient', edit_views.client.editclient, name='editclient'),
     path('newclient', edit_views.client.newclient, name='newclient'),
 

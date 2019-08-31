@@ -41,13 +41,9 @@
 
     </table>
 
-
-<!--
-    {{ caseform.as_p }}
--->
 	<a class="round_button" href={% url 'practice:rand' %}>Cancel</a>
-	<span style="width:200px"></span>
-    <input  class="round_button" type="submit" value="Submit">
-  </form>
+    <input  class="round_button" type="submit" name="action" value="Save">
+    <input  class="round_button" type="submit" name="print" value="Save And Print Invoice">
+ </form>
 
 {% endblock %}

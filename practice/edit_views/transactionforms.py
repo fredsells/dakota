@@ -5,17 +5,6 @@ import datetime
 from practice.models import Person, Case, Transaction, TransactionType
 
 class NewTransactionForm(forms.ModelForm):
-    # clientid = forms.IntegerField()
-    # def __init__(self, *args, **kwargs):
-    #     print ('xxxxxxxxxxxxxxxxxxxxxxxx', args, kwargs)
-    #     super(NewTransactionForm, self).__init__(*args, **kwargs)
-    #     initial = kwargs.get('initial', None)
-    #     if initial:
-    #         person = initial.get('person', 0)
-    #         self.fields['clientid'].initial = person.id
-    #     else:
-    #         print('xxxxxxxxxxxxxxxxxxxx initial missing')
-
 
     class Meta:
         model = Transaction
@@ -24,11 +13,10 @@ class NewTransactionForm(forms.ModelForm):
 
         #widgets = dict(person=forms.HiddenInput, id=forms.HiddenInput)
         widgets = dict(dateposted=forms.DateInput(attrs={'class': 'datepicker'}),
-                       #person=forms.HiddenInput,
+                       person=forms.HiddenInput,
                        #id=forms.HiddenInput
                        )
-
-
+        labels = dict(person='')
 
 
 class TransactionForm(forms.ModelForm):
@@ -36,7 +24,7 @@ class TransactionForm(forms.ModelForm):
         model = Transaction
         fields = ['id',  'dateposted', 'transtype', 'description', 'amount']
         labels = dict(casenum='Transaction Type',
-                      id='Internal Id',
+                      id='',
                       )
         widgets = {
             'dateposted': forms.DateInput(attrs={'class': 'datepicker'}),

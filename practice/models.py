@@ -6,6 +6,29 @@ from django.utils import timezone
 from django.db import models
 from unittest.util import _MAX_LENGTH
 
+DOCTYPE_CHOICES = [ ('invoice', 'Inovice'),
+                    ('engagement', 'Engagement Ltr'),
+
+                    ]
+
+
+
+class DocxTemplate(models.Model):
+    title = models.CharField(max_length=255, choices=DOCTYPE_CHOICES)
+    location = models.FileField(upload_to='docx_templates/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return 'type={} uploaded on={}, file location={}'.format(self.title, self.uploaded_at, self.location)
+
+    def get_path(self):
+        return self.location.name
+
+    class Meta:
+        db_table = 'templates'
+        managed = True
+
+
 class TransactionType(models.Model):
     id = models.AutoField(primary_key=True, db_column='transactiontypeid')
     name = models.CharField(max_length=20)
@@ -16,22 +39,12 @@ class TransactionType(models.Model):
         return 'transaction type={}, id={}, multiplier={}'.format(self.name, self.id, self.multiplier)
 
     def __str__(self):
-        return '{}, multiplier={}'.format(self.name, self.multiplier)
+        return '{} id={}, multiplier={}'.format(self.name, self.id, self.multiplier)
 
     class Meta:
         db_table = 'transactiontypes'
         managed = True
 
-class PaymentType(models.Model):
-    id = models.IntegerField(primary_key=True, db_column='paymenttypeid')
-    type = models.CharField(max_length=10)
-
-    def __unicode__(self):
-        return 'type={}, id={}'.format((self.type, self.id))
-
-    class Meta:
-        db_table = 'paymenttypes'
-        managed = True
 
 
 class Salutation(models.Model):
@@ -52,8 +65,10 @@ class Salutation(models.Model):
 # Create your models here.
 class Person(models.Model):
     id = models.IntegerField(primary_key=True, db_column='personid')
+    salutation = models.ForeignKey(Salutation, db_column='salutationid', default='', on_delete=models.SET_NULL, null=True)
     firstname = models.CharField(max_length=40)
     lastname = models.CharField(max_length=60)
+    suffix = models.CharField(max_length=10, default='', help_text='used to differentiate people with same first and last name')
     ssn = models.CharField(max_length=12, null=True, blank=True, default='')
     dob = models.DateField(null=True)
     addr1 = models.CharField(max_length=40, null=True, blank=True, default='')
@@ -68,6 +83,29 @@ class Person(models.Model):
 
     def __str__(self):
         return '{},{}  id={}'.format(self.lastname, self.firstname, self.id)
+
+    def get_salutation(self):
+        if self.salutation:
+            text = self.salutation.description + ' '
+        else:
+            text = 'Mr. '
+        text += self.lastname or 'LASTNAME NOT DEFINED'
+        return 'Dear ' + text + ':'
+
+    def get_mailing_address(self):
+        items = [self.salutation, self.firstname, self.lastname, self.suffix]
+        who = ' '.join(item for item in items if item) #eliminate empty fields
+        csz = self.city  or 'NO CITY ENTERED'
+        csz += ', '
+        csz += self.state or 'ND'
+        csz += ' '
+        csz += self.zip or 'NOZIPCODE'
+        lines = [who]
+        lines.append(self.addr1)
+        lines.append(self.addr2)
+        lines.append(csz)
+        block = '\n'.join( [line for line in lines if line]) #remove blank lines, i.e. addr2
+        return block
 
     class Meta:
         db_table = 'persons'
@@ -88,6 +126,13 @@ class Case(models.Model):
     def __unicode__(self):
         return 'case id={}, client={}'.format( self.id, self.person.lastname)
 
+    def __str__(self):
+        return 'case id={}, client={}, case={}, begin={}, desc={}'.format(self.id, self.person.lastname, self.casenum, self.begindate, self.description)
+
+    def is_valid(self):
+        if self.description.lower().startswith('zz'): return False
+        return True
+
     class Meta:
         db_table = 'cases'
         managed = True
@@ -100,13 +145,17 @@ class Transaction(models.Model):
     transtype = models.ForeignKey(TransactionType, null=True, on_delete=models.SET_NULL)
     description = models.CharField(max_length=60, null=True, default='', blank=True)
     amount = models.DecimalField(max_digits=8, decimal_places=2, null=True )
+    balancedue = models.DecimalField(max_digits=8, decimal_places=2, null=True )
 
 
     def __unicode__(self):
-
         return 'date posted={}, description={}, balance'.format( self.person.lastname, self.dateposted, self.description)
+
     def __str__(self):
-        return 'date posted={}, description={}, balance{}'.format( self.person.lastname, self.dateposted, self.description)
+        return 'date posted={}, description={}, type={} amount{}'.format(self.dateposted, self.description, self.transtype, self.amount)
+
+    def get_balance_impact(self):
+        return self.amount * self.transtype.multiplier
 
     class Meta:
         db_table = 'transactions'
