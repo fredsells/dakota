@@ -12,14 +12,16 @@ class NewCaseForm(forms.ModelForm):
         fields = ['person',  'casenum', 'representationfee', 'trialfee', 'description', 'initialpayment',
                   'begindate']
         labels = dict(casenum = 'Case #',
-                                 id = 'Internal Id',
+                                 id = '',
                                  representationfee = 'Rep Fee',
                                  trialfee = 'Trial Fee',
                                  description = 'Description',
                                  initialpayment='Initial Pmt',
-                                 begindate= 'Begin Date')
+                                 begindate= 'Begin Date',
+                                 person=''
+                            )
 
-        widgets = dict(#person=forms.HiddenInput,
+        widgets = dict(person=forms.HiddenInput,
                        begindate=forms.DateInput(attrs={'class': 'datepicker'})
 
                        )

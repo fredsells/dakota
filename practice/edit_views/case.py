@@ -46,8 +46,7 @@ def editcase(request):
     title = str(case.person)
     if request.method == 'GET':
         form = CaseForm(instance=case)
-        return render(request, 'practice/editcase.html', dict(form=form,
-                                                              title=title)
+        return render(request, 'practice/editcase.html', dict(form=form, title=title)
                       )
     else:  ##############must be request.method == 'POST':
         filled_form = CaseForm(request.POST, instance=case)
@@ -60,10 +59,7 @@ def editcase(request):
         else:
             note = "form not valid " + str(filled_form.errors)
             print (filled_form.errors)
-            return render(request, 'practice/editcase.html', dict(form=filled_form,
-                                                                  note=note,
-                                                                    title=title)
-                          )
+            return render(request, 'practice/editcase.html', dict(form=filled_form, note=note, title=title))
 
 
 

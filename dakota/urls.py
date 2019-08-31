@@ -18,12 +18,13 @@ from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic import RedirectView
-from django.contrib.auth.views import LoginView
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('practice/', include('practice.urls', namespace='practice')),
     path('favicon', RedirectView.as_view(url='practice/static/images/favicon.ico')),
-    path('accounts/', include('django.contrib.auth.urls')),  # new
+   # path('accounts/login', auth_views.LoginView.as_view() ),  # new
+    path('', include('django.contrib.auth.urls'))
 
 ]

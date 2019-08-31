@@ -78,9 +78,9 @@ def get_transactions(request):
     x = JsonResponse({'data': values, 'title':title, 'clientid':client_id})
     return x
 
-@login_required
+
 def get_clients(request):
-    print (request.user)
+    print ('>>>>>>>>>>>>>>>>>>>>>>>>',request.user)
     items = Person.objects.all().select_related().order_by('lastname', 'firstname')
     values = items.values()
     data = list(values)

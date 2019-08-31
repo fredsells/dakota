@@ -49,8 +49,10 @@
 </style>
 
     <header class="page-header">
-        <h1>August 19 Version</h1>
-   
+        <h1>September 1 Version</h1>
+
+	{% if user.is_authenticated %}
+
 	<nav>
 		<a class="round_button" href={% url 'practice:home' %}>Home</a>
 
@@ -61,11 +63,15 @@
 		
 	</nav>
 	</header>
-    <div >
-        
+
             {% block content %}
 					base block content should be overwritten
             {% endblock %}
+		{% else %}
+	<h2>
+			<p> Login <a href="/login">Here</a></p>
+	</h2>
+	{% endif %}
 	</div>
 	
   </body>
