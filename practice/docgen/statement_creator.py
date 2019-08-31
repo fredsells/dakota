@@ -34,8 +34,8 @@ class StatementCreator(object):
     def get_fees(self):  #this is ugly because mailmerge cannot handle two tables.  fix with upgrade?
         lines = [('Flat fee for representation:', self.repfees),
                  ('Trial Fee:', self.trialfees),
-                 ('Discounts', self.discounts),
-                 ('TOTAL FEES AND EXPENSES',self.TotalFees),
+                 ('Discounts:', self.discounts),
+                 ('TOTAL FEES AND EXPENSES:',self.TotalFees),
                  ]
         lines = [(x[0], '$%.2f' % x[1]) for x in lines if x[1]]
         lines.insert(0, ('Description', 'Amount'))
@@ -64,7 +64,7 @@ class StatementCreator(object):
                                 BalanceAsOfDate = str(datetime.date.today()),
                                 BalanceDue = '$%.2f' % self.BalanceDue,
                                 DueDate = str(self.Invoice.dateposted + datetime.timedelta(days=10)),
-                                AmountDue = '%.2f' % self.Invoice.amount,
+                                AmountDue = '$%.2f' % self.Invoice.amount,
                                 ClientName = '%s %s' % (self.Person.firstname, self.Person.lastname)
                                 )
         self.parameters.update(kwargs)

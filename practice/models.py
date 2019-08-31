@@ -98,7 +98,7 @@ class Person(models.Model):
         csz = self.city  or 'NO CITY ENTERED'
         csz += ', '
         csz += self.state or 'ND'
-        csz += ' '
+        csz += '  '
         csz += self.zip or 'NOZIPCODE'
         lines = [who]
         lines.append(self.addr1)
