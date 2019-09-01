@@ -28,7 +28,7 @@ from django.contrib.auth.decorators import permission_required
 
 
 from .models import Person, Case, Transaction, TransactionType
-from .mymailmerge import phase_one
+
 
 LETTER_DIR = settings.MEDIA_ROOT
 
