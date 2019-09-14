@@ -8,6 +8,8 @@ __pycache__/
 *.so
 
 # Distribution / packaging
+all_letters/docx_templates/
+all_letters/tmpfiles/
 .Python
 env/
 build/
