@@ -37,7 +37,7 @@ def create_http_response( fullpath):
 def print_transaction(transaction):
     stmt = StatementCreator(transaction)
     path = create_document('invoice', transaction.person.lastname, 'invoice', rows=stmt.get_rows(), **stmt.get_fields())
-    print(path)
+    print('>>>>>>>>>>>>transaction path', path)
     response = create_http_response(path)
     return response
 
@@ -65,7 +65,7 @@ def newtransaction(request):
                                       description=description)
             transaction.save()
             note = "edit transaction saved"
-            if request.POST.get('print', True) and transaction.transtype.name == 'Invoice':
+            if request.POST.get('print', False) :
                  return print_transaction(transaction)
             else:
                 return redirect('practice:rand')  # , {'note':note})#, {'person':person})
@@ -89,8 +89,8 @@ def edittransaction(request):
         form =TransactionForm(request.POST, instance=transaction)
         if form.is_valid():
             transaction = form.save()
-            print(transaction.id)
-            if request.POST.get('print', True) and transaction.transtype.name == 'Invoice':
+            #print(transaction.id)
+            if request.POST.get('print', False):
                  return print_transaction(transaction)
             else:
                 return redirect('practice:rand')

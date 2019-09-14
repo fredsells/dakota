@@ -34,7 +34,7 @@ def create_http_response( fullpath):
 def print_transaction(case):
     stmt = Parser(case)
     path = create_document('engagement', case.person.lastname, None, rows=[], **stmt.get_fields())
-    print(path)
+    #todo print(path)
     response = create_http_response(path)
     return response
 
@@ -52,7 +52,7 @@ def editcase(request):
         filled_form = CaseForm(request.POST, instance=case)
         if filled_form.is_valid():
             case = filled_form.save()
-            if request.POST.get('print', True):
+            if request.POST.get('print', False):
                 return print_transaction(case)
             else:
                 return redirect('practice:rand')  # , {'note':note})#, {'person':person})
@@ -73,9 +73,9 @@ def newcase(request):
         return render(request, 'practice/newcase.html', {'form':form, 'person' :str(person) } )
     elif request.method == 'POST':
         form = NewCaseForm(request.POST  )###########, instance=case)
-        print ('===============post', request.POST )
+        #todo print ('===============post', request.POST )
         if form.is_valid():
-            print('xxxxxxxxxxxxxxxxxxxxxxx', form.cleaned_data['begindate'])
+            #todo print('xxxxxxxxxxxxxxxxxxxxxxx', form.cleaned_data['begindate'])
             case = form.save()
             if request.POST.get('print', True):
                 return print_transaction(case)

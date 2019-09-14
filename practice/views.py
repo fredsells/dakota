@@ -66,21 +66,23 @@ def get_transactions(request):
     values = list(items.values('person','transtype__name', 'id', 'dateposted', 'description',  'transtype__id') )
     for i,item in enumerate(items):
         x = dict()
-        Balance += item.amount * item.transtype.multiplier
+        amount = item.amount * item.transtype.multiplier
+        Balance += amount
         charge = invoice = payment = ''
-        if item.transtype.multiplier == 1: charge = item.amount
-        elif item.transtype.multiplier == -1: payment = item.amount
-        else: invoice = item.amount
+        if item.transtype.id in (1,2,3): charge = amount
+        elif item.transtype.id==4: payment = amount
+        elif item.transtype.id==5: invoice = item.amount
+        else: pass
         options = dict(balance=Balance, charge=charge, payment=payment, invoice = invoice)
         values[i].update(options)
-    for v in values: print (v)
+    #todo for v in values: print (v)
 #    values = items.values()
     x = JsonResponse({'data': values, 'title':title, 'clientid':client_id})
     return x
 
 
 def get_clients(request):
-    print ('>>>>>>>>>>>>>>>>>>>>>>>>',request.user)
+    # todo print ('>>>>>>>>>>>>>>>>>>>>>>>>',request.user)
     items = Person.objects.all().select_related().order_by('lastname', 'firstname')
     values = items.values()
     data = list(values)
@@ -96,7 +98,7 @@ class ClientList(generic.ListView):
 
     def get_queryset(self):
         people = Person.objects.all().order_by(Lower('lastname'), Lower('firstname'))# not working .annotate(num_cases=Count(Case))
-        for p in people: print(p.lastname)
+        #for p in people: print(p.lastname)
  
 class InvoiceList(generic.ListView):
     template_name = 'practice/invoices.html'

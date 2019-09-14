@@ -21,7 +21,7 @@ from practice.models import Person, Case
 from .clientforms import NewPersonForm, PersonForm
 ID = 'id'
 def editclient(request):
-    print ('\n\n\n =============================================editclient {} '.format(request.method) )
+    #todo print ('\n\n\n =============================================editclient {} '.format(request.method) )
     note = ''
     id = request.GET.get('id', None) or request.POST.get('id')
     person = Person.objects.get(pk=id)
@@ -31,7 +31,7 @@ def editclient(request):
         return render(request, 'practice/editclient.html', {'form' :form, 'note' :note, 'title':title})
 
     elif request.method == 'POST':
-        print( '==========================\npost parms', request.POST.items())
+        #todo print( '==========================\npost parms', request.POST.items())
         filled_form = PersonForm(request.POST, instance=person)
         if filled_form.is_valid():
             filled_form.save()
@@ -44,7 +44,7 @@ def editclient(request):
 ####################### new client below ###################################################
 
 def newclient(request):
-    print ('\n\n\n =============================================newclient {} '.format(request.method) )
+    #todo print ('\n\n\n =============================================newclient {} '.format(request.method) )
     note = ''
     if request.method == 'GET':
         person = Person()

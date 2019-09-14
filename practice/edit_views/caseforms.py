@@ -31,7 +31,7 @@ class CaseForm(forms.ModelForm):
     class Meta:
         model = Case
         fields = ['id', 'casenum', 'representationfee', 'trialfee', 'description', 'initialpayment',
-                  'begindate', 'enddate']
+                  'begindate'] #, 'enddate']
         labels = dict(casenum = 'Case #',
                                  id = 'Internal Id',
                                  representationfee = 'Rep Fee',
@@ -42,6 +42,6 @@ class CaseForm(forms.ModelForm):
         widgets = dict(person_id=forms.HiddenInput,
                        id=forms.HiddenInput,
                        begindate=forms.DateInput(attrs={'class': 'datepicker'}),
-                       enddate=forms.DateInput(attrs={'class': 'datepicker'})
+                      # enddate=forms.DateInput(attrs={'class': 'datepicker'})
                        )
 

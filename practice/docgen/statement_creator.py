@@ -17,7 +17,7 @@ class StatementCreator(object):
         self.RepFees = self.Transactions.filter(transtype_id=1)#.values_list('amount', flat=True))
         self.TrialFees = self.Transactions.filter(transtype_id=2)#.values_list('amount', flat=True))
         self.Discounts = self.Transactions.filter(transtype_id=3)#.values_list('amount', flat=True))
-        self.Payments = self.Transactions.filter(transtype_id=2)
+        self.Payments = self.Transactions.filter(transtype_id=4)
 
         self.repfees = sum(self.RepFees.values_list('amount', flat=True))
         self.trialfees   = sum(self.TrialFees.values_list('amount', flat=True))
@@ -44,15 +44,16 @@ class StatementCreator(object):
         return text
 
     def get_rows(self):
-        payments = list(self.Payments.values('id', 'dateposted', 'amount') )
+        payments = list(self.Payments.values('id', 'dateposted', 'amount', 'transtype__multiplier') )
         balance = self.TotalFees
         for p in payments:
-            balance -= p['amount']
             p['invoice'] = '%s' % p['id']
             p['dateposted'] = str(p['dateposted'])
-            p['payment'] = '$%.2f' % p['amount']
+            delta = p['amount'] ####################* p['transtype__multiplier']
+            p['payment'] = '$%.2f' % delta
+            balance -= delta
             p['balancedue'] = '$%.2f' % balance
-            
+
         return payments
     
     
